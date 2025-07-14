@@ -3,6 +3,8 @@ import 'package:bauntan/home/person.dart';
 import 'package:bauntan/home/sipport.dart';
 import 'package:bauntan/home/trans.dart';
 import 'package:bauntan/model/model.dart';
+
+import 'package:bountenadmin/model/appdata.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:flutter/services.dart';
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Bounten',
-      theme: ThemeData(primarySwatch: Colors.blue),
+      theme: ThemeData(primarySwatch: adth),
       debugShowCheckedModeBanner: false,
       home: DashboardPage(),
     );
@@ -134,6 +136,7 @@ class _DashboardPageState extends State<DashboardPage> {
         return shouldExit ?? false;
       },
       child: Scaffold(
+        backgroundColor: bg,
         backgroundColor: const Color.fromARGB(255, 238, 248, 252),
         appBar: AppBar(
           surfaceTintColor: Colors.white,
@@ -201,21 +204,21 @@ class _DashboardPageState extends State<DashboardPage> {
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color.fromARGB(255, 216, 240, 249),
+                    color: bg,
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: ListTile(
                     title: Row(
                       children: [
                         (true)
-                            ? Icon(Icons.dashboard, color: Colors.blue)
+                            ? Icon(Icons.dashboard, color: adth)
                             : Icon(Icons.dashboard_outlined),
                         SizedBox(width: 10),
                         Text(
                           'Dashboard',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.blue,
+                            color: adth,
                           ),
                         ),
                       ],
@@ -234,7 +237,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   title: Row(
                     children: [
                       (false)
-                          ? Icon(Icons.person_rounded, color: Colors.blue)
+                          ? Icon(Icons.person_rounded, color: adth)
                           : Icon(Icons.person_outline_rounded),
                       SizedBox(width: 10),
                       Text(
@@ -259,7 +262,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   title: Row(
                     children: [
                       (false)
-                          ? Icon(Icons.local_activity, color: Colors.blue)
+                          ? Icon(Icons.local_activity, color: adth)
                           : Icon(Icons.local_activity_outlined),
                       SizedBox(width: 10),
                       Text(
@@ -286,7 +289,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   title: Row(
                     children: [
                       (false)
-                          ? Icon(Icons.traffic_rounded, color: Colors.blue)
+                          ? Icon(Icons.traffic_rounded, color: adth)
                           : Icon(Icons.transform_outlined),
                       SizedBox(width: 10),
                       Text(
@@ -313,10 +316,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   title: Row(
                     children: [
                       (false)
-                          ? Icon(
-                              Icons.support_agent_rounded,
-                              color: Colors.blue,
-                            )
+                          ? Icon(Icons.support_agent_rounded, color: adth)
                           : Icon(Icons.support_agent_outlined),
                       SizedBox(width: 10),
                       Text(
@@ -342,22 +342,22 @@ class _DashboardPageState extends State<DashboardPage> {
                 _buildStatCard(
                   "Total Traffic",
                   "15,678",
-                  Icon(Icons.traffic, color: Colors.blueAccent),
+                  Icon(Icons.traffic, color: adthAccent),
                 ),
                 _buildStatCard(
                   "Total Leads",
                   "15,678",
-                  Icon(Icons.group, color: Colors.blueAccent),
+                  Icon(Icons.group, color: adthAccent),
                 ),
                 _buildStatCard(
                   "Total Earnings",
                   "₹12,345",
-                  Icon(Icons.account_balance_wallet, color: Colors.blueAccent),
+                  Icon(Icons.account_balance_wallet, color: adthAccent),
                 ),
                 _buildStatCard(
                   "Pending Leads",
                   "56",
-                  Icon(Icons.pending, color: Colors.blueAccent),
+                  Icon(Icons.pending, color: adthAccent),
                 ),
               ],
             ),
@@ -372,14 +372,14 @@ class _DashboardPageState extends State<DashboardPage> {
                         // color: Colors.white,
 
                         // borderRadius: BorderRadius.circular(15),
-                        // border: Border.all(color: Colors.blue),
+                        // border: Border.all(color: adth),
                       ),
                       child: TextField(
                         readOnly: true,
                         decoration: InputDecoration(
                           hintText: 'https://bounten.com/lakshit',
                           suffixIcon: IconButton(
-                            icon: Icon(Icons.qr_code, color: Colors.blue),
+                            icon: Icon(Icons.qr_code, color: adth),
                             onPressed: () {
                               copyText("https://bounten.com/lakshit");
                             },
@@ -387,9 +387,9 @@ class _DashboardPageState extends State<DashboardPage> {
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
 
-                            borderSide: BorderSide(color: Colors.blue),
+                            borderSide: BorderSide(color: adth),
                           ),
-                          hintStyle: TextStyle(color: Colors.blue),
+                          hintStyle: TextStyle(color: adth),
                         ),
                       ),
                     ),
@@ -410,7 +410,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
                         child: MaterialButton(
-                          color: Colors.blue,
+                          color: adth,
                           onPressed: () {
                             copyText("https://bounten.com/lakshit");
                           },
@@ -450,12 +450,12 @@ class _DashboardPageState extends State<DashboardPage> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.share_outlined, color: Colors.blue),
+                              Icon(Icons.share_outlined, color: adth),
                               Padding(
                                 padding: const EdgeInsets.all(15.0),
                                 child: Text(
                                   'Share',
-                                  style: TextStyle(color: Colors.blue),
+                                  style: TextStyle(color: adth),
                                 ),
                               ),
                             ],
@@ -513,7 +513,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
                                           child: Container(
                                             color: (index == tabb)
-                                                ? Colors.blue
+                                                ? adth
                                                 : const Color.fromARGB(
                                                     255,
                                                     238,
@@ -531,7 +531,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                                   style: TextStyle(
                                                     fontSize: 10,
                                                     color: (index != tabb)
-                                                        ? Colors.blue
+                                                        ? adth
                                                         : Colors.white,
                                                   ),
                                                 ),
@@ -789,7 +789,7 @@ class _DashboardPageState extends State<DashboardPage> {
                     value,
                     style: TextStyle(
                       fontSize: 20,
-                      color: Colors.blueAccent,
+                      color: adthAccent,
                       fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
