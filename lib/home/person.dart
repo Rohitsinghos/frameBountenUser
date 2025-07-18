@@ -157,6 +157,7 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
   String msg = "";
   bool logi = false;
+  var vide = 738;
 
   Future<void> _getUpdate() async {
     try {
@@ -178,9 +179,10 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
           "address": "${_cntr[4].text}",
           "socialLinks": [],
           "AvatarId": Afpro['profile']['AvatarId'],
-          "VideoId": Afpro['profile']['VideoId'],
+          "VideoId": (vide == -1) ? null : Afpro['profile']['VideoId'],
         }),
       );
+      vide = Afpro['profile']['VideoId'] ?? 667;
 
       // https://bountenapi.socialseller.in/api/affiliate/transactions/37?pagination[page]=1&pagination[pageSize]=5
 
@@ -216,32 +218,30 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
 
           msg = "saved successfully!";
           logi = true;
-          if (!(Afpro == null ||
-              Afpro['profile']['videoUrl'] == null ||
-              Afpro['profile']['videoUrl']['url'] == null)) {
-            _controller =
-                VideoPlayerController.network(
-                    (Afpro == null ||
-                            Afpro['profile']['videoUrl'] == null ||
-                            Afpro['profile']['videoUrl']['url'] == null)
-                        ? ''
-                        : Afpro['profile']['videoUrl']['url'],
-                  )
-                  ..initialize().then((_) {
-                    if (!mounted) return;
-                    setState(() {});
-                    // _controller.play(); // Auto play
-                  });
-          } else {
-            _controller =
-                VideoPlayerController.network(
-                    'https://bounten-aws-bucket.s3.ap-south-1.amazonaws.com/samplevideo_1280x720_1mb-1752144184728.mp4',
-                  )
-                  ..initialize().then((_) {
-                    if (!mounted) return;
-                    setState(() {});
-                    // _controller.play(); // Auto play
-                  });
+          String? videoUrl;
+
+          try {
+            final profile = Afpro?['profile'];
+            final url = profile?['videoUrl']?['url'];
+
+            videoUrl = url;
+
+            _controller = VideoPlayerController.network(videoUrl!);
+            _controller
+                .initialize()
+                .then((_) {
+                  videowo = true;
+                  if (mounted) setState(() {});
+                })
+                .catchError((error) {
+                  videowo = false;
+                  print("Video init error: $error");
+                  // Fallback or show error UI
+                });
+          } catch (e) {
+            videowo = false;
+            print("Exception during video load: $e");
+            // Optionally use a fallback
           }
 
           // if (!mounted) return;
@@ -277,32 +277,38 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
   @override
   void initState() {
     super.initState();
-    if (!(Afpro == null ||
-        Afpro['profile']['videoUrl'] == null ||
-        Afpro['profile']['videoUrl']['url'] == null)) {
-      _controller =
-          VideoPlayerController.network(
-              (Afpro == null ||
-                      Afpro['profile']['videoUrl'] == null ||
-                      Afpro['profile']['videoUrl']['url'] == null)
-                  ? ''
-                  : Afpro['profile']['videoUrl']['url'],
-            )
-            ..initialize().then((_) {
-              setState(() {});
-              // _controller.play(); // Auto play
-            });
-    } else {
-      _controller =
-          VideoPlayerController.network(
-              'https://bounten-aws-bucket.s3.ap-south-1.amazonaws.com/samplevideo_1280x720_1mb-1752144184728.mp4',
-            )
-            ..initialize().then((_) {
-              setState(() {});
-              // _controller.play(); // Auto play
-            });
+    String? videoUrl;
+
+    try {
+      final profile = Afpro?['profile'];
+      final url = profile?['videoUrl']?['url'];
+      if (url != null && url is String && url.isNotEmpty) {
+        videoUrl = url;
+      } else {
+        videoUrl =
+            'https://bounten-aws-bucket.s3.ap-south-1.amazonaws.com/samplevideo_1280x720_1mb-1752144184728.mp4';
+      }
+
+      _controller = VideoPlayerController.network(videoUrl!);
+      _controller
+          .initialize()
+          .then((_) {
+            videowo = true;
+            if (mounted) setState(() {});
+          })
+          .catchError((error) {
+            videowo = false;
+            print("Video init error: $error");
+            // Fallback or show error UI
+          });
+    } catch (e) {
+      videowo = false;
+      print("Exception during video load: $e");
+      // Optionally use a fallback
     }
   }
+
+  bool videowo = false;
 
   @override
   void dispose() {
@@ -346,8 +352,11 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
               ),
 
               child: CircleAvatar(
-                backgroundImage: (Afpro != null)
-                    ? NetworkImage(Afpro['profile']['media']['url'])
+                backgroundImage:
+                    (Afpro != null &&
+                        Afpro!['profile']?['media']?['url'] != null)
+                    ? NetworkImage(Afpro!['profile']['media']['url'])
+                          as ImageProvider
                     : AssetImage('assets/avatar.png'),
                 radius: 15,
               ),
@@ -727,8 +736,8 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                                                                             setState(
                                                                               () {},
                                                                             );
-                                                                            Afpro['profile']['VideoId'] =
-                                                                                null;
+                                                                            vide =
+                                                                                -1;
                                                                             _getUpdate();
                                                                             Navigator.pop(
                                                                               context,
@@ -787,8 +796,17 @@ class _PersonalInfoPageState extends State<PersonalInfoPage> {
                                               ),
                                             ),
                                           ),
-                                          (Afpro['profile']['VideoId'] == null)
-                                              ? Container()
+                                          (Afpro?['profile']?['VideoId'] ==
+                                                      null ||
+                                                  videowo == false)
+                                              ? Container(
+                                                  child: Text(
+                                                    "error loading video",
+                                                    style: TextStyle(
+                                                      color: Colors.red,
+                                                    ),
+                                                  ),
+                                                )
                                               : Row(
                                                   children: [
                                                     // sitioned(

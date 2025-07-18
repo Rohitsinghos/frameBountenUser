@@ -33,7 +33,7 @@ class AppDrawer extends StatelessWidget {
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          SizedBox(height: 70),
+          SizedBox(height: 100),
           GestureDetector(
             onTap: () {
               Navigator.pop(context);
@@ -53,7 +53,7 @@ class AppDrawer extends StatelessWidget {
               ],
             ),
           ),
-          SizedBox(height: 10),
+          SizedBox(height: 20),
           MaterialButton(
             onPressed: () {
               Navigator.pushAndRemoveUntil(
@@ -77,6 +77,7 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
           ),
+
           MaterialButton(
             onPressed: () {
               Navigator.push(

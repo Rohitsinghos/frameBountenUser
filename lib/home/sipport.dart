@@ -212,8 +212,11 @@ class _SupportTicketPageState extends State<SupportTicketPage> {
               ),
 
               child: CircleAvatar(
-                backgroundImage: (Afpro != null)
-                    ? NetworkImage(Afpro['profile']['media']['url'])
+                backgroundImage:
+                    (Afpro != null &&
+                        Afpro!['profile']?['media']?['url'] != null)
+                    ? NetworkImage(Afpro!['profile']['media']['url'])
+                          as ImageProvider
                     : AssetImage('assets/avatar.png'),
                 radius: 15,
               ),

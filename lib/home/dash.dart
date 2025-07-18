@@ -61,6 +61,9 @@ class _DashboardPageState extends State<DashboardPage> {
     },
   );
 
+  int cp = 1;
+  int mx = 1;
+
   List lead = [];
 
   Future<void> _getProfileData() async {
@@ -286,7 +289,7 @@ class _DashboardPageState extends State<DashboardPage> {
         Uri.parse(
           (tabb == 0)
               ? "${BASE_URL}/affiliate/profile"
-              : "${BASE_URL}/affiliate/profile?pagination[page]=1&pagination[pageSize]=10&status=${tabst[tabb]}",
+              : "${BASE_URL}/affiliate/profile?pagination[page]=${cp}&pagination[pageSize]=10&status=${tabst[tabb]}",
         ),
 
         headers: {
@@ -308,6 +311,7 @@ class _DashboardPageState extends State<DashboardPage> {
         // leadData =
 
         load = "User found!";
+        // logi = true
         g1 = true;
 
         if (!mounted) return;
@@ -429,8 +433,11 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
 
                       child: CircleAvatar(
-                        backgroundImage: (Afpro != null)
-                            ? NetworkImage(Afpro['profile']['media']['url'])
+                        backgroundImage:
+                            (Afpro != null &&
+                                Afpro!['profile']?['media']?['url'] != null)
+                            ? NetworkImage(Afpro!['profile']['media']['url'])
+                                  as ImageProvider
                             : AssetImage('assets/avatar.png'),
                         radius: 15,
                       ),
@@ -919,6 +926,43 @@ class _DashboardPageState extends State<DashboardPage> {
                                         ],
                                       )
                                     : Text(""),
+
+
+                                    (leadData.length == 0)
+                                    ? Column(
+                                        children: [
+                                          // Divider(),
+                                          IconButton(
+                                            onPressed: (){
+                                              if(cp <= 1){
+                                                return;
+                                              }
+                                              cp--;
+                                              setState({}),
+                                            },
+                                            Icon(Icons.next),
+                                          ),
+                                          Container(
+                                            child: Center(
+                                              child: Text(
+                                                cp,
+                                                style: TextStyle(fontSize: 14),
+                                              ),
+                                            ),
+                                          ),
+                                          SizedBox(height: 30),
+                                          IconButton(
+                                            onPressed: (){
+                                              if(cp >= mx){
+                                                return;
+                                              }
+                                              cp++;
+                                              setState({}),
+                                            },
+                                            Icon(Icons.next),
+                                          ),
+                                        ],
+                                      ): Text(""),
                               ],
                             ),
                           ),
