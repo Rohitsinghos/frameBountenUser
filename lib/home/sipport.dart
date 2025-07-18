@@ -1,11 +1,21 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:bauntan/home/dash.dart';
 import 'package:bauntan/home/earn.dart';
 import 'package:bauntan/home/person.dart';
 import 'package:bauntan/home/trans.dart';
+import 'package:bauntan/other/upp.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:http/http.dart' as http;
+import 'package:path/path.dart' as path;
+import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:bauntan/model/model.dart';
+import 'package:bauntan/other/compo.dart';
+import 'package:bauntan/other/drawer.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 // import 'package:image_picker/image_picker.dart';
 
 // void main() => runApp(MaterialApp(home: SupportTicketPage()));
@@ -16,10 +26,140 @@ class SupportTicketPage extends StatefulWidget {
 }
 
 class _SupportTicketPageState extends State<SupportTicketPage> {
-  final _nameController = TextEditingController(text: 'Story Kitadake');
-  final _emailController = TextEditingController(text: '1112');
+  final _nameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _commentController = TextEditingController();
+  // File? _videoFile;
+
+  Future<void> _getSupport() async {
+    try {
+      final res = await http.get(
+        Uri.parse("${BASE_URL}/affiliate/performance"),
+
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer ${userToken}',
+        },
+      );
+
+      // https://bountenapi.socialseller.in/api/affiliate/transactions/37?pagination[page]=1&pagination[pageSize]=5
+
+      if (res.statusCode == 200) {
+        print(jsonDecode(res.body));
+
+        // Perfo = jsonDecode(res.body);
+
+        g1 = true;
+
+        if (!mounted) return;
+        msg = "Successful!";
+        logi = true;
+
+        // if (g1 && g2 && g3) {
+        setState(() {});
+        // }
+      } else {
+        msg = "Server Error!";
+        logi = false;
+        setState(() {});
+        print("nndnndndnnd");
+      }
+    } catch (e) {
+      print(e);
+      msg = "Network Error!";
+      logi = false;
+      setState(() {});
+    }
+  }
+
+  bool logi = true;
+
+  // ignore: unused_field
   File? _videoFile;
+  bool _isUploading = false;
+
+  Future<void> pickVideo() async {
+    final result = await FilePicker.platform.pickFiles(type: FileType.video);
+
+    if (result != null && result.files.single.path != null) {
+      File file = File(result.files.single.path!);
+      int sizeInMB = await file.length() ~/ (1024 * 1024);
+
+      if (sizeInMB > 10) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("File too large! Max 10MB allowed.")),
+        );
+        return;
+      }
+
+      setState(() => _videoFile = file);
+    }
+  }
+
+  String msg = "";
+
+  Future<void> uploadVideo() async {
+    if (_videoFile == null) return;
+
+    setState(() => _isUploading = true);
+
+    final uri = Uri.parse("https://bountenapi.socialseller.in/api/uploads");
+    final request = http.MultipartRequest("POST", uri);
+
+    request.headers.addAll({
+      'Authorization': 'Bearer $userToken', // Replace this with actual token
+      'Accept': 'application/json',
+    });
+
+    request.files.add(
+      await http.MultipartFile.fromPath(
+        'file', // Replace with correct field name if needed
+        _videoFile!.path,
+        contentType: MediaType('video', 'mp4'), // adjust if needed
+      ),
+    );
+
+    try {
+      final response = await request.send();
+      final resBody = await http.Response.fromStream(response);
+
+      if (response.statusCode == 200) {
+        print(jsonDecode(resBody.body));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text("Upload successful!")));
+
+        Afpro['profile']['VideoId'] = jsonDecode(resBody.body)[0]['id'];
+        msg = "Upload successful!";
+
+        print(jsonDecode(resBody.body)[0]['id']);
+
+        if (!mounted) return;
+        _videoFile = null;
+
+        setState(() {});
+
+        if (!mounted) return;
+      } else {
+        _videoFile = null;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Upload failed: ${resBody.statusCode}")),
+        );
+        msg = "Upload Failed!";
+        setState(() {});
+      }
+    } catch (e) {
+      _videoFile = null;
+      msg = "Network error!";
+      setState(() {});
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+    }
+
+    setState(() => _isUploading = false);
+  }
 
   // final ImagePicker _picker = ImagePicker();
 
@@ -52,198 +192,37 @@ class _SupportTicketPageState extends State<SupportTicketPage> {
         title: Image.asset('assets/logo2.jpg', height: 40),
         backgroundColor: Colors.white,
         actions: [
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: const Color.from(
-                  alpha: 1,
-                  red: 0.416,
-                  green: 0.624,
-                  blue: 0.988,
+          GestureDetector(
+            onTap: () {
+              showDialog(context: context, builder: (context) => LogoutPage());
+              // LogoutPage();
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: const Color.from(
+                    alpha: 1,
+                    red: 0.416,
+                    green: 0.624,
+                    blue: 0.988,
+                  ),
+                  width: 3,
                 ),
-                width: 3,
+                borderRadius: BorderRadius.circular(30),
               ),
-              borderRadius: BorderRadius.circular(30),
-            ),
 
-            child: CircleAvatar(
-              backgroundImage: AssetImage('assets/avatar.png'),
-              radius: 15,
+              child: CircleAvatar(
+                backgroundImage: (Afpro != null)
+                    ? NetworkImage(Afpro['profile']['media']['url'])
+                    : AssetImage('assets/avatar.png'),
+                radius: 15,
+              ),
             ),
           ),
           SizedBox(width: 10),
         ],
       ),
-      drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            SizedBox(height: 70),
-            GestureDetector(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30.0),
-                    child: Icon(
-                      Icons.cancel,
-                      size: 30,
-                      color: const Color.fromARGB(255, 111, 110, 110),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 10),
-            MaterialButton(
-              onPressed: () {
-                Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => DashboardPage()),
-                  (context) => false,
-                );
-              },
-              child: Container(
-                child: ListTile(
-                  title: Row(
-                    children: [
-                      (false)
-                          ? Icon(Icons.dashboard, color: Colors.blue)
-                          : Icon(Icons.dashboard_outlined),
-                      SizedBox(width: 10),
-                      Text(
-                        'Dashboard',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 111, 110, 110),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            MaterialButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PersonalInfoPage()),
-                );
-              },
-              child: Container(
-                child: ListTile(
-                  title: Row(
-                    children: [
-                      (false)
-                          ? Icon(Icons.person_rounded, color: Colors.blue)
-                          : Icon(Icons.person_outline_rounded),
-                      SizedBox(width: 10),
-                      Text(
-                        'Profile',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 111, 110, 110),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            MaterialButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => EarningPage()),
-                );
-              },
-              child: Container(
-                child: ListTile(
-                  title: Row(
-                    children: [
-                      (false)
-                          ? Icon(Icons.local_activity, color: Colors.blue)
-                          : Icon(Icons.local_activity_outlined),
-                      SizedBox(width: 10),
-                      Text(
-                        'Performance',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: const Color.fromARGB(255, 111, 110, 110),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            MaterialButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => TransactionHistoryPage(),
-                  ),
-                );
-              },
-              child: ListTile(
-                title: Row(
-                  children: [
-                    (false)
-                        ? Icon(Icons.traffic_rounded, color: Colors.blue)
-                        : Icon(Icons.transform_outlined),
-                    SizedBox(width: 10),
-                    Text(
-                      'Transaction History',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: const Color.fromARGB(255, 111, 110, 110),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            MaterialButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SupportTicketPage()),
-                );
-              },
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color.fromARGB(255, 216, 240, 249),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: ListTile(
-                  title: Row(
-                    children: [
-                      (true)
-                          ? Icon(
-                              Icons.support_agent_rounded,
-                              color: Colors.blue,
-                            )
-                          : Icon(Icons.support_agent_outlined),
-                      SizedBox(width: 10),
-                      Text(
-                        'Support',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.blue,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
+      drawer: AppDrawer(page: 5),
       body: Padding(
         padding: const EdgeInsets.all(1.0),
         child: ListView(
@@ -322,7 +301,14 @@ class _SupportTicketPageState extends State<SupportTicketPage> {
                           margin: EdgeInsets.symmetric(horizontal: 20),
                           padding: const EdgeInsets.all(18.0),
                           child: GestureDetector(
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => VideoUploadPage(),
+                                ),
+                              );
+                            },
                             child: DottedBorder(
                               borderType: BorderType.RRect,
                               radius: Radius.circular(12),
@@ -335,16 +321,42 @@ class _SupportTicketPageState extends State<SupportTicketPage> {
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(
-                                        Icons.video_library,
-                                        size: 35,
-                                        color: Colors.grey,
-                                      ),
-                                      SizedBox(height: 8),
-                                      Text(
-                                        // (_videoFile == null) ?
-                                        "Upload Video", // : "Video Selected",
-                                        style: TextStyle(color: Colors.grey),
+                                      GestureDetector(
+                                        onTap: () {
+                                          _videoFile = null;
+                                          setState(() {});
+
+                                          pickVideo();
+                                        },
+                                        child: Container(
+                                          color: bg,
+                                          child: Center(
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Icon(
+                                                  Icons.video_library,
+                                                  size: 35,
+                                                  color: (_videoFile == null)
+                                                      ? Colors.grey
+                                                      : Colors.blue,
+                                                ),
+                                                SizedBox(height: 8),
+                                                Text(
+                                                  (_videoFile == null)
+                                                      ? "Upload Video"
+                                                      : "Video Selected",
+                                                  style: TextStyle(
+                                                    color: (_videoFile == null)
+                                                        ? Colors.grey
+                                                        : Colors.blue,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),
@@ -375,7 +387,11 @@ class _SupportTicketPageState extends State<SupportTicketPage> {
                               child: MaterialButton(
                                 padding: EdgeInsets.all(0),
                                 color: Colors.blue,
-                                onPressed: () {},
+                                onPressed: () {
+                                  logi = true;
+                                  msg = "loading...";
+                                  _getSupport();
+                                },
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
@@ -401,6 +417,19 @@ class _SupportTicketPageState extends State<SupportTicketPage> {
                       ],
                     ),
                   ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Text(
+                        msg,
+                        style: TextStyle(
+                          color: (!logi) ? Colors.red : Colors.green,
+                        ),
+                      ),
+                    ],
+                  ),
+
                   SizedBox(height: 10),
                 ],
               ),

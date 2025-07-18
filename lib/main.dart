@@ -1,9 +1,68 @@
 import 'package:bauntan/home/dash.dart';
+import 'package:bauntan/land.dart';
+import 'package:bauntan/model/model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:video_player/video_player.dart';
 
-void main() {
-  runApp(MyApp());
+// final FlutterSecureStorage secureStorage = FlutterSecureStorage();
+final storage = FlutterSecureStorage();
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  String? token = await storage.read(
+    key: 'bota**@useryubountensaahsjkhnxloggedtoken',
+  );
+
+  userToken = token ?? "";
+
+  runApp(MyApp(isLoggedIn: token != null && token.isNotEmpty));
+  // runApp(MyApp());
 }
+
+bool log = true;
+
+class MyApp extends StatefulWidget {
+  bool isLoggedIn;
+  MyApp({required this.isLoggedIn});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  // bool isLoggedIn;
+  // MyApp({required this.isLoggedIn});
+
+  // getToken() async {
+  //   String? token = await storage.read(
+  //     key: 'bota**@useryubountensaahsjkhnxloggedtoken',
+  //   );
+
+  //   userToken = token ?? "";
+  // }
+
+  // @override
+  // void initState() {
+  //   // TODO: implement initState
+  //   super.initState();
+
+  //   // getToken();
+  // }
+
+  @override
+  Widget build(BuildContext context) {
+    // bool isLoggedIn = userToken != null && userToken.isNotEmpty;
+    return MaterialApp(
+      title: 'BOUNTEN AFFILIATE',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      debugShowCheckedModeBanner: false,
+      home: (widget.isLoggedIn) ? DashboardPage() : LoginPage(),
+    );
+  }
+}
+
+// VideoPlayer(L)
 
 // class MyApp extends StatelessWidget {
 //   const MyApp({super.key});
