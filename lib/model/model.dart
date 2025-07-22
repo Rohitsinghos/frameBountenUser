@@ -16,6 +16,11 @@ String userToken = "";
 
 bool g1 = false, g2 = false, g3 = false, g4 = false;
 
+int tabb = 0;
+
+List leadData = [];
+
+int ctr = 1;
 Map<String, dynamic> Afpro = {};
 Map<String, dynamic> Trans = {};
 

@@ -56,11 +56,15 @@ class AppDrawer extends StatelessWidget {
           SizedBox(height: 20),
           MaterialButton(
             onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                context,
-                MaterialPageRoute(builder: (context) => DashboardPage()),
-                (conext) => false,
-              );
+              if (page == 1) {
+                Navigator.pop(context);
+              } else {
+                Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => DashboardPage()),
+                  (conext) => false,
+                );
+              }
             },
             child: Container(
               decoration: gbox(1),
@@ -77,13 +81,17 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
           ),
-
+          SizedBox(height: 5),
           MaterialButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => PersonalInfoPage()),
-              );
+              if (page == 2) {
+                Navigator.pop(context);
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PersonalInfoPage()),
+                );
+              }
             },
             child: Container(
               decoration: gbox(2),
@@ -100,12 +108,17 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: 5),
           MaterialButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => EarningPage()),
-              );
+              if (page == 3) {
+                Navigator.pop(context);
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => EarningPage()),
+                );
+              }
             },
             child: Container(
               decoration: gbox(3),
@@ -122,14 +135,19 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: 5),
           MaterialButton(
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => TransactionHistoryPage(),
-                ),
-              );
+              if (page == 4) {
+                Navigator.pop(context);
+              } else {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TransactionHistoryPage(),
+                  ),
+                );
+              }
             },
             child: Container(
               decoration: gbox(4),

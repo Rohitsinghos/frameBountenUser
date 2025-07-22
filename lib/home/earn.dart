@@ -69,7 +69,7 @@ class _EarningPageState extends State<EarningPage> {
       if (res.statusCode == 200) {
         final data = jsonDecode(res.body);
         Perfo = data;
-        print(Perfo);
+        // print(Perfo);
 
         trafficData = (data["data"]["traffic"]["monthly"] as List)
             .map<double>((e) => (e["count"] ?? 0).toDouble())
@@ -85,9 +85,9 @@ class _EarningPageState extends State<EarningPage> {
 
         setState(() {});
       } else {
-        print("API Error: ${res.body}");
+        // print("Server Error: ${res.body}");
         if (!mounted) return;
-        msg = "API Error!";
+        msg = "Server Error!";
 
         setState(() {});
       }
@@ -126,6 +126,18 @@ class _EarningPageState extends State<EarningPage> {
 
   String msg = "Loading";
 
+  Future<void> _refreshData() async {
+    if (!mounted) return;
+    await Future.delayed(Duration(milliseconds: 100));
+    if (!mounted) return;
+    // reset();
+    chos = "3 Months";
+    updateDateRange("3M");
+    msg = "Loading";
+
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     // if (Perfo == null) {
@@ -142,54 +154,59 @@ class _EarningPageState extends State<EarningPage> {
       appBar: _buildAppBar(),
       drawer: AppDrawer(page: 3),
 
-      body: ListView(
-        padding: EdgeInsets.all(16),
-        children: [
-          _headerSection(),
-          SizedBox(height: 15),
-          _linkSection(),
-          SizedBox(height: 15),
-          _actionButtons(),
-          SizedBox(height: 15),
-          (Perfo == null)
-              ? Center(
-                  child: Column(
-                    children: [
-                      Text(
-                        msg,
-                        style: TextStyle(
-                          color: (msg == "Loading") ? Colors.green : Colors.red,
+      body: RefreshIndicator(
+        onRefresh: _refreshData,
+        child: ListView(
+          padding: EdgeInsets.all(16),
+          children: [
+            _headerSection(),
+            SizedBox(height: 15),
+            _linkSection(),
+            SizedBox(height: 15),
+            _actionButtons(),
+            SizedBox(height: 15),
+            (Perfo == null)
+                ? Center(
+                    child: Column(
+                      children: [
+                        Text(
+                          msg,
+                          style: TextStyle(
+                            color: (msg == "Loading")
+                                ? Colors.green
+                                : Colors.red,
+                          ),
                         ),
+                        IconButton(
+                          onPressed: () {
+                            _getperf();
+                          },
+                          icon: Icon(Icons.refresh),
+                        ),
+                      ],
+                    ),
+                  )
+                : Column(
+                    children: [
+                      _buildStatCard(
+                        title: "Traffic",
+                        value: "${Perfo!["data"]["traffic"]["total"]}",
+                        growth:
+                            "${Perfo!["data"]["traffic"]["percentChange"] ?? 0}%",
+                        chart: _buildTrafficChart(),
                       ),
-                      IconButton(
-                        onPressed: () {
-                          _getperf();
-                        },
-                        icon: Icon(Icons.refresh),
+                      SizedBox(height: 20),
+                      _buildStatCard(
+                        title: "Earning",
+                        value: "₹${Perfo!["data"]["earnings"]["total"]}",
+                        growth:
+                            "${Perfo!["data"]["earnings"]["percentChange"] ?? 0}%",
+                        chart: _buildEarningsChart(),
                       ),
                     ],
                   ),
-                )
-              : Column(
-                  children: [
-                    _buildStatCard(
-                      title: "Traffic",
-                      value: "${Perfo!["data"]["traffic"]["total"]}",
-                      growth:
-                          "${Perfo!["data"]["traffic"]["percentChange"] ?? 0}%",
-                      chart: _buildTrafficChart(),
-                    ),
-                    SizedBox(height: 20),
-                    _buildStatCard(
-                      title: "Earning",
-                      value: "₹${Perfo!["data"]["earnings"]["total"]}",
-                      growth:
-                          "${Perfo!["data"]["earnings"]["percentChange"] ?? 0}%",
-                      chart: _buildEarningsChart(),
-                    ),
-                  ],
-                ),
-        ],
+          ],
+        ),
       ),
     );
   }

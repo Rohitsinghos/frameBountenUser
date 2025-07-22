@@ -64,7 +64,7 @@ class _DashboardPageState extends State<DashboardPage> {
   int cp = 1;
   int mx = 1;
 
-  List lead = [];
+  // List lead = [];
 
   Future<void> _getProfileData() async {
     try {
@@ -84,7 +84,7 @@ class _DashboardPageState extends State<DashboardPage> {
       // https://bountenapi.socialseller.in/api/affiliate/transactions/37?pagination[page]=1&pagination[pageSize]=5
 
       if (res.statusCode == 200) {
-        print(jsonDecode(res.body));
+        // print(jsonDecode(res.body));
 
         Afpro = jsonDecode(res.body);
 
@@ -118,7 +118,7 @@ class _DashboardPageState extends State<DashboardPage> {
       // https://bountenapi.socialseller.in/api/affiliate/transactions/37?pagination[page]=1&pagination[pageSize]=5
 
       if (res5.statusCode == 200) {
-        print(jsonDecode(res5.body));
+        // print(jsonDecode(res5.body));
 
         Perfo = jsonDecode(res5.body);
       } else {
@@ -144,7 +144,7 @@ class _DashboardPageState extends State<DashboardPage> {
       // https://bountenapi.socialseller.in/api
 
       if (res4.statusCode == 200) {
-        print(jsonDecode(res.body));
+        // print(jsonDecode(res.body));
 
         Trans = jsonDecode(res4.body);
       } else {
@@ -157,7 +157,7 @@ class _DashboardPageState extends State<DashboardPage> {
 
       final res2 = await http.get(
         Uri.parse(
-          "${BASE_URL}/affiliate/profile?pagination[page]=1&pagination[pageSize]=5",
+          "${BASE_URL}/affiliate/profile?pagination[page]=1&pagination[pageSize]=10",
         ),
 
         headers: {
@@ -168,9 +168,11 @@ class _DashboardPageState extends State<DashboardPage> {
       );
 
       if (res2.statusCode == 200) {
-        print(jsonDecode(res2.body));
+        // print(jsonDecode(res2.body));
 
         Afpro5 = jsonDecode(res2.body);
+        leadData = Afpro5["leads"];
+
         g2 = true;
 
         if (!mounted) return;
@@ -197,7 +199,7 @@ class _DashboardPageState extends State<DashboardPage> {
       );
 
       if (res3.statusCode == 200) {
-        print(jsonDecode(res3.body));
+        // print(jsonDecode(res3.body));
 
         Stat = jsonDecode(res3.body);
 
@@ -208,6 +210,7 @@ class _DashboardPageState extends State<DashboardPage> {
             : "${Stat["referralLink"]}";
 
         if (!mounted) return;
+        getleads();
 
         if (g1 && g2 && g3) {
           setState(() {});
@@ -263,7 +266,8 @@ class _DashboardPageState extends State<DashboardPage> {
 
   String selectedValue = 'Poor Quality';
 
-  int tabb = 0;
+  String msg = "Loading";
+  bool logi = false;
 
   @override
   void initState() {
@@ -274,21 +278,46 @@ class _DashboardPageState extends State<DashboardPage> {
       _getProfileData();
     }
 
+    msg = "Loading";
+    logi = false;
     if (!mounted) return;
     setState(() {});
+
+    getleads();
   }
 
-  List leadData = [];
+  Future<void> _refreshData() async {
+    if (!mounted) return;
+    await Future.delayed(Duration(milliseconds: 100));
+    if (!mounted) return;
+    g1 = false;
+    g2 = false;
+    g3 = false;
+    msg = "Loading";
+    load = "Loading";
+    tabb = 0;
+
+    setState(() {});
+
+    _getProfileData();
+
+    msg = "Loading";
+    logi = false;
+    if (!mounted) return;
+    setState(() {});
+
+    getleads();
+  }
 
   Future<void> getleads() async {
     try {
-      if ((g1 && g2 && g3)) {
-        return;
-      }
+      // if ((g1 && g2 && g3)) {
+      //   return;
+      // }
       final res = await http.get(
         Uri.parse(
           (tabb == 0)
-              ? "${BASE_URL}/affiliate/profile"
+              ? "${BASE_URL}/affiliate/profile?pagination[page]=${cp}&pagination[pageSize]=10"
               : "${BASE_URL}/affiliate/profile?pagination[page]=${cp}&pagination[pageSize]=10&status=${tabst[tabb]}",
         ),
 
@@ -302,17 +331,20 @@ class _DashboardPageState extends State<DashboardPage> {
       // https://bountenapi.socialseller.in/api/affiliate/transactions/37?pagination[page]=1&pagination[pageSize]=5
 
       if (res.statusCode == 200) {
-        print(jsonDecode(res.body));
+        // print(jsonDecode(res.body));
 
         // leadData = jsonDecode(res.body)['profile']['leads'];
 
-        Afpro = jsonDecode(res.body);
+        Afpro5 = jsonDecode(res.body);
 
         // leadData =
 
+        leadData = Afpro5["leads"];
+        print(leadData);
         load = "User found!";
-        // logi = true
-        g1 = true;
+        msg = load;
+        logi = false;
+        // g1 = true;
 
         if (!mounted) return;
 
@@ -322,6 +354,8 @@ class _DashboardPageState extends State<DashboardPage> {
       } else {
         print("nndnndndnnd");
         load = "Something wrong with sever!";
+        msg = "Server Error!";
+        logi = false;
         if (!mounted) return;
 
         setState(() {});
@@ -330,6 +364,8 @@ class _DashboardPageState extends State<DashboardPage> {
       print(e);
 
       load = "Network error!";
+      msg = load;
+      logi = false;
       if (!mounted) return;
 
       setState(() {});
@@ -338,9 +374,9 @@ class _DashboardPageState extends State<DashboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (g1 && g2 && g3) {
-      leadData = Afpro["leads"];
-    }
+    // if (g1 && g2 && g3) {
+    //   leadData = Afpro["leads"];
+    // }
     return WillPopScope(
       onWillPop: () async {
         // Show the confirmation dialog
@@ -447,238 +483,248 @@ class _DashboardPageState extends State<DashboardPage> {
                 ],
               ),
               drawer: AppDrawer(page: 1),
-              body: ListView(
-                padding: EdgeInsets.symmetric(vertical: 10),
-                children: [
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    children: [
-                      _buildStatCard(
-                        "Total Traffic",
-                        (Afpro == null ||
-                                Afpro["stats"] == null ||
-                                Afpro["stats"]["totalTraffic"] == null)
-                            ? "15,678"
-                            : "${Afpro["stats"]["totalTraffic"]}",
-                        Icon(Icons.traffic, color: adthAccent),
-                      ),
-                      _buildStatCard(
-                        "Total Leads",
-                        (Afpro == null ||
-                                Afpro["stats"] == null ||
-                                Afpro["stats"]["totalLeads"] == null)
-                            ? "15,678"
-                            : "${Afpro["stats"]["totalLeads"]}",
-                        Icon(Icons.group, color: adthAccent),
-                      ),
-                      _buildStatCard(
-                        "Total Earnings",
-                        "₹${(Afpro == null || Afpro["stats"] == null || Afpro["stats"]["totalEarnings"] == null) ? "15,678" : "${(Afpro["stats"]["totalEarnings"]).toInt()}"}",
-                        Icon(Icons.account_balance_wallet, color: adthAccent),
-                      ),
-                      _buildStatCard(
-                        "Pending Leads",
-                        (Afpro == null ||
-                                Afpro["stats"] == null ||
-                                Afpro["stats"]["pendingLeadsCount"] == null)
-                            ? "15,678"
-                            : "${Afpro["stats"]["pendingLeadsCount"]}",
-                        Icon(Icons.pending, color: adthAccent),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 10),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Row(
+              body: RefreshIndicator(
+                onRefresh: _refreshData,
+                child: ListView(
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  children: [
+                    Wrap(
+                      alignment: WrapAlignment.center,
                       children: [
-                        Expanded(
-                          child: Container(
-                            decoration: BoxDecoration(
-                              // color: Colors.white,
+                        _buildStatCard(
+                          "Total Traffic",
+                          (Afpro == null ||
+                                  Afpro["stats"] == null ||
+                                  Afpro["stats"]["totalTraffic"] == null)
+                              ? "15,678"
+                              : "${Afpro["stats"]["totalTraffic"]}",
+                          Icon(Icons.traffic, color: adthAccent),
+                        ),
+                        _buildStatCard(
+                          "Total Leads",
+                          (Afpro == null ||
+                                  Afpro["stats"] == null ||
+                                  Afpro["stats"]["totalLeads"] == null)
+                              ? "15,678"
+                              : "${Afpro["stats"]["totalLeads"]}",
+                          Icon(Icons.group, color: adthAccent),
+                        ),
+                        _buildStatCard(
+                          "Total Earnings",
+                          "₹${(Afpro == null || Afpro["stats"] == null || Afpro["stats"]["totalEarnings"] == null) ? "15,678" : "${(Afpro["stats"]["totalEarnings"]).toInt()}"}",
+                          Icon(Icons.account_balance_wallet, color: adthAccent),
+                        ),
+                        _buildStatCard(
+                          "Pending Leads",
+                          (Afpro == null ||
+                                  Afpro["stats"] == null ||
+                                  Afpro["stats"]["pendingLeadsCount"] == null)
+                              ? "15,678"
+                              : "${Afpro["stats"]["pendingLeadsCount"]}",
+                          Icon(Icons.pending, color: adthAccent),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                // color: Colors.white,
 
-                              // borderRadius: BorderRadius.circular(15),
-                              // border: Border.all(color: adth),
+                                // borderRadius: BorderRadius.circular(15),
+                                // border: Border.all(color: adth),
+                              ),
+                              child: TextField(
+                                controller: ctl,
+                                readOnly: true,
+                                style: TextStyle(color: Colors.blue),
+
+                                decoration: InputDecoration(
+                                  hintText:
+                                      (Stat == null ||
+                                          Stat["referralLink"] == null)
+                                      ? 'https://bounten.com/lakshit'
+                                      : "${Stat["referralLink"]}",
+                                  suffixIcon: IconButton(
+                                    icon: Icon(Icons.qr_code, color: adth),
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (context) => QrPage(),
+                                      );
+                                    },
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+
+                                    borderSide: BorderSide(color: adth),
+                                  ),
+                                  hintStyle: TextStyle(color: adth),
+                                ),
+                              ),
                             ),
-                            child: TextField(
-                              controller: ctl,
-                              readOnly: true,
-                              style: TextStyle(color: Colors.blue),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 15),
 
-                              decoration: InputDecoration(
-                                hintText:
-                                    (Stat == null ||
-                                        Stat["referralLink"] == null)
-                                    ? 'https://bounten.com/lakshit'
-                                    : "${Stat["referralLink"]}",
-                                suffixIcon: IconButton(
-                                  icon: Icon(Icons.qr_code, color: adth),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Card(
+                            child: Container(
+                              width: 160,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: MaterialButton(
+                                  color: adth,
                                   onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => QrPage(),
+                                    copyText(
+                                      (Stat == null ||
+                                              Stat["referralLink"] == null)
+                                          ? 'https://bounten.com/lakshit'
+                                          : "${Stat["referralLink"]}",
                                     );
                                   },
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-
-                                  borderSide: BorderSide(color: adth),
-                                ),
-                                hintStyle: TextStyle(color: adth),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  SizedBox(height: 15),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Card(
-                          child: Container(
-                            width: 160,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: MaterialButton(
-                                color: adth,
-                                onPressed: () {
-                                  copyText(
-                                    (Stat == null ||
-                                            Stat["referralLink"] == null)
-                                        ? 'https://bounten.com/lakshit'
-                                        : "${Stat["referralLink"]}",
-                                  );
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.copy, color: Colors.white),
-                                    Padding(
-                                      padding: const EdgeInsets.all(15.0),
-                                      child: Text(
-                                        'Copy Link',
-                                        style: TextStyle(color: Colors.white),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.copy, color: Colors.white),
+                                      Padding(
+                                        padding: const EdgeInsets.all(15.0),
+                                        child: Text(
+                                          'Copy Link',
+                                          style: TextStyle(color: Colors.white),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                        Card(
-                          borderOnForeground: false,
-                          child: Container(
-                            width: 160,
+                          Card(
+                            borderOnForeground: false,
+                            child: Container(
+                              width: 160,
 
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: adth),
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadiusGeometry.circular(12),
-                              child: MaterialButton(
-                                color: Colors.white,
-                                onPressed: () {
-                                  _shareImageAndText();
-                                },
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.share_outlined, color: adth),
-                                    Padding(
-                                      padding: const EdgeInsets.all(15.0),
-                                      child: Text(
-                                        'Share',
-                                        style: TextStyle(color: adth),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: adth),
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadiusGeometry.circular(12),
+                                child: MaterialButton(
+                                  color: Colors.white,
+                                  onPressed: () {
+                                    _shareImageAndText();
+                                  },
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.share_outlined, color: adth),
+                                      Padding(
+                                        padding: const EdgeInsets.all(15.0),
+                                        child: Text(
+                                          'Share',
+                                          style: TextStyle(color: adth),
+                                        ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 15),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            "Leads Quality Analysis",
-                            style: TextStyle(
-                              fontSize: 17,
-                              fontWeight: FontWeight.bold,
-                              color: const Color.fromARGB(255, 114, 114, 114),
+                    SizedBox(height: 15),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              "Leads Quality Analysis",
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: const Color.fromARGB(255, 114, 114, 114),
+                              ),
                             ),
                           ),
-                        ),
 
-                        Container(
-                          color: const Color.fromRGBO(255, 255, 255, 1),
-                          child: Padding(
-                            padding: const EdgeInsets.all(0.0),
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Container(
-                                    height: 40,
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(3.0),
-                                      child: ListView.builder(
-                                        itemCount: tabst.length,
-                                        scrollDirection: Axis.horizontal,
-                                        itemBuilder: (contex, index) => Container(
-                                          margin: EdgeInsets.all(5),
-                                          child: GestureDetector(
-                                            onTap: () {
-                                              tabb = index;
-                                              g1 = false;
-                                              setState(() {});
+                          Container(
+                            color: const Color.fromRGBO(255, 255, 255, 1),
+                            child: Padding(
+                              padding: const EdgeInsets.all(0.0),
+                              child: Column(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Container(
+                                      height: 40,
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(3.0),
+                                        child: ListView.builder(
+                                          itemCount: tabst.length,
+                                          scrollDirection: Axis.horizontal,
+                                          itemBuilder: (contex, index) => Container(
+                                            margin: EdgeInsets.all(5),
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                tabb = index;
 
-                                              getleads();
-                                            },
-                                            child: ClipRRect(
-                                              borderRadius:
-                                                  BorderRadiusGeometry.circular(
-                                                    8,
-                                                  ),
+                                                // g1 = false;
 
-                                              child: Container(
-                                                color: (index == tabb)
-                                                    ? adth
-                                                    : const Color.fromARGB(
-                                                        255,
-                                                        238,
-                                                        248,
-                                                        252,
-                                                      ),
-                                                child: Padding(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 8.0,
-                                                      ),
-                                                  child: Center(
-                                                    child: Text(
-                                                      tabst[index],
-                                                      style: TextStyle(
-                                                        fontSize: 14,
-                                                        color: (index != tabb)
-                                                            ? adth
-                                                            : Colors.white,
+                                                cp = 1;
+                                                mx = 1;
+                                                logi = true;
+                                                msg = "Loading";
+                                                leadData = [];
+                                                setState(() {});
+
+                                                getleads();
+                                              },
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadiusGeometry.circular(
+                                                      8,
+                                                    ),
+
+                                                child: Container(
+                                                  color: (index == tabb)
+                                                      ? adth
+                                                      : const Color.fromARGB(
+                                                          255,
+                                                          238,
+                                                          248,
+                                                          252,
+                                                        ),
+                                                  child: Padding(
+                                                    padding:
+                                                        const EdgeInsets.symmetric(
+                                                          horizontal: 8.0,
+                                                        ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        tabst[index],
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: (index != tabb)
+                                                              ? adth
+                                                              : Colors.white,
+                                                        ),
                                                       ),
                                                     ),
                                                   ),
@@ -690,288 +736,445 @@ class _DashboardPageState extends State<DashboardPage> {
                                       ),
                                     ),
                                   ),
-                                ),
 
-                                Table(
-                                  border: TableBorder(
-                                    horizontalInside: BorderSide(
-                                      color: Colors.grey,
-                                      width: 0.2,
+                                  Table(
+                                    border: TableBorder(
+                                      horizontalInside: BorderSide(
+                                        color: Colors.grey,
+                                        width: 0.2,
+                                      ),
                                     ),
-                                  ),
-                                  // defaultColumnWidth: ,
-                                  columnWidths: const {
-                                    // 0: FixedColumnWidth(190),
-                                    1: FixedColumnWidth(80),
-                                    2: FixedColumnWidth(80),
-                                  },
-                                  defaultVerticalAlignment:
-                                      TableCellVerticalAlignment.middle,
+                                    // defaultColumnWidth: ,
+                                    columnWidths: const {
+                                      // 0: FixedColumnWidth(190),
+                                      1: FixedColumnWidth(80),
+                                      2: FixedColumnWidth(80),
+                                    },
+                                    defaultVerticalAlignment:
+                                        TableCellVerticalAlignment.middle,
 
-                                  children: [
-                                    TableRow(
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.all(4),
-
-                                          child: Text(
-                                            textAlign: TextAlign.center,
-                                            'Name',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              color: Colors.grey,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            textAlign: TextAlign.center,
-                                            'Location',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              color: Colors.grey,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                        Container(
-                                          padding: EdgeInsets.all(4),
-                                          child: Text(
-                                            textAlign: TextAlign.center,
-                                            'Lead Quality Analysis',
-                                            style: TextStyle(
-                                              fontSize: 13,
-                                              color: Colors.grey,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-
-                                    // GridView.builder(gridDelegate: , itemBuilder: (context, index)=>Container()),
-                                    for (
-                                      int i = 0;
-                                      i <
-                                          ((Afpro == null && leadData == null)
-                                              ? 0
-                                              : leadData.length);
-                                      i++
-                                    )
+                                    children: [
                                       TableRow(
                                         children: [
                                           Container(
-                                            height: 50,
-                                            color: Colors.white,
                                             padding: EdgeInsets.all(4),
-                                            child: Center(
+
+                                            child: Text(
+                                              textAlign: TextAlign.center,
+                                              'Name',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.all(4),
+                                            child: Text(
+                                              textAlign: TextAlign.center,
+                                              'Location',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.all(4),
+                                            child: Text(
+                                              textAlign: TextAlign.center,
+                                              'Lead Quality Analysis',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+
+                                      // GridView.builder(gridDelegate: , itemBuilder: (context, index)=>Container()),
+                                      for (
+                                        int i = 0;
+                                        i <
+                                            ((Afpro == null && leadData == null)
+                                                ? 0
+                                                : leadData.length);
+                                        i++
+                                      )
+                                        TableRow(
+                                          children: [
+                                            Container(
+                                              height: 50,
+                                              color: Colors.white,
+                                              padding: EdgeInsets.all(4),
+                                              child: Center(
+                                                child: Text(
+                                                  leadData[i]["name"],
+                                                  style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Colors.black,
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Container(
+                                              color: Colors.white,
+                                              padding: EdgeInsets.all(4),
                                               child: Text(
-                                                leadData[i]["name"],
+                                                // overflow: TextOverflow.ellipsis,
+                                                textAlign: TextAlign.center,
+                                                leadData[i]["location"],
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.black,
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                          Container(
-                                            color: Colors.white,
-                                            padding: EdgeInsets.all(4),
-                                            child: Text(
-                                              // overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.center,
-                                              leadData[i]["location"],
-                                              style: TextStyle(
-                                                fontSize: 12,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                          ),
 
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Container(
-                                                decoration: BoxDecoration(
-                                                  color: const Color.fromARGB(
-                                                    255,
-                                                    238,
-                                                    248,
-                                                    252,
-                                                  ),
-                                                  borderRadius:
-                                                      BorderRadius.circular(5),
-                                                ),
-                                                padding: EdgeInsets.symmetric(
-                                                  vertical: 5,
-                                                  horizontal: 5,
-                                                ),
-
-                                                child: Center(
-                                                  child: Text(
-                                                    "${leadData[i]["status"]}",
-                                                    style: TextStyle(
-                                                      color: Colors.blue,
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: [
+                                                Container(
+                                                  decoration: BoxDecoration(
+                                                    color: const Color.fromARGB(
+                                                      255,
+                                                      238,
+                                                      248,
+                                                      252,
                                                     ),
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                          5,
+                                                        ),
+                                                  ),
+                                                  padding: EdgeInsets.symmetric(
+                                                    vertical: 5,
+                                                    horizontal: 5,
                                                   ),
 
-                                                  //  DropdownButton<String>(
-                                                  //   // padding: EdgeInsets.symmetric(
-                                                  //   //   horizontal: 5,
-                                                  //   // ),
-                                                  //   alignment: Alignment.center,
+                                                  child: Center(
+                                                    child: Text(
+                                                      "${leadData[i]["status"]}",
+                                                      style: TextStyle(
+                                                        color: Colors.blue,
+                                                      ),
+                                                    ),
 
-                                                  //   value: selectedValue,
-                                                  //   icon: Icon(
-                                                  //     Icons.arrow_drop_down,
-                                                  //   ),
-                                                  //   style: TextStyle(
-                                                  //     color: Colors.black,
-                                                  //     fontSize: 11,
-                                                  //   ),
-                                                  //   onChanged:
-                                                  //       (String? newValue) {
-                                                  //         setState(() {
-                                                  //           selectedValue =
-                                                  //               newValue!;
-                                                  //         });
-                                                  //       },
-                                                  //   items:
-                                                  //       <String>[
-                                                  //         'High Quality',
-                                                  //         'Low Quality',
-                                                  //         'Poor Quality',
-                                                  //         'Poori Quality',
-                                                  //         // 'Mango',
-                                                  //       ].map<
-                                                  //         DropdownMenuItem<
-                                                  //           String
-                                                  //         >
-                                                  //       >((String value) {
-                                                  //         return DropdownMenuItem<
-                                                  //           String
-                                                  //         >(
-                                                  //           value: value,
-                                                  //           child: Text(value),
-                                                  //         );
-                                                  //       }).toList(),
+                                                    //  DropdownButton<String>(
+                                                    //   // padding: EdgeInsets.symmetric(
+                                                    //   //   horizontal: 5,
+                                                    //   // ),
+                                                    //   alignment: Alignment.center,
 
-                                                  // DropdownButton(
-                                                  //   dropdownColor: const Color.fromARGB(
-                                                  //     255,
-                                                  //     238,
-                                                  //     248,
-                                                  //     252,
-                                                  //   ),
-                                                  //   iconEnabledColor: const Color.fromARGB(
-                                                  //     255,
-                                                  //     238,
-                                                  //     248,
-                                                  //     252,
-                                                  //   ),
-                                                  //   onChanged: (value) {
-                                                  //     // butt = value.toString();
-                                                  //   },
-                                                  //   // value: lead,
-                                                  //   items: [],
-                                                  // child: Container(
-                                                  //   color: const Color.fromARGB(
-                                                  //     255,
-                                                  //     238,
-                                                  //     248,
-                                                  //     252,
-                                                  //   ),
-                                                  //   padding: EdgeInsets.all(4),
-                                                  //   child: Row(
-                                                  //     children: [
-                                                  //       Text(
-                                                  //         // overflow: TextOverflow.ellipsis,
-                                                  //         textAlign: TextAlign.center,
-                                                  //         '${lead['quality']} Quality',
-                                                  //         style: TextStyle(
-                                                  //           fontSize: 11,
-                                                  //           color: Colors.black,
-                                                  //         ),
-                                                  //       ),
-                                                  //       Icon(Icons.arrow_drop_down),
-                                                  //     ],
-                                                  //   ),
-                                                  // ),
-                                                  // ),
+                                                    //   value: selectedValue,
+                                                    //   icon: Icon(
+                                                    //     Icons.arrow_drop_down,
+                                                    //   ),
+                                                    //   style: TextStyle(
+                                                    //     color: Colors.black,
+                                                    //     fontSize: 11,
+                                                    //   ),
+                                                    //   onChanged:
+                                                    //       (String? newValue) {
+                                                    //         setState(() {
+                                                    //           selectedValue =
+                                                    //               newValue!;
+                                                    //         });
+                                                    //       },
+                                                    //   items:
+                                                    //       <String>[
+                                                    //         'High Quality',
+                                                    //         'Low Quality',
+                                                    //         'Poor Quality',
+                                                    //         'Poori Quality',
+                                                    //         // 'Mango',
+                                                    //       ].map<
+                                                    //         DropdownMenuItem<
+                                                    //           String
+                                                    //         >
+                                                    //       >((String value) {
+                                                    //         return DropdownMenuItem<
+                                                    //           String
+                                                    //         >(
+                                                    //           value: value,
+                                                    //           child: Text(value),
+                                                    //         );
+                                                    //       }).toList(),
+
+                                                    // DropdownButton(
+                                                    //   dropdownColor: const Color.fromARGB(
+                                                    //     255,
+                                                    //     238,
+                                                    //     248,
+                                                    //     252,
+                                                    //   ),
+                                                    //   iconEnabledColor: const Color.fromARGB(
+                                                    //     255,
+                                                    //     238,
+                                                    //     248,
+                                                    //     252,
+                                                    //   ),
+                                                    //   onChanged: (value) {
+                                                    //     // butt = value.toString();
+                                                    //   },
+                                                    //   // value: lead,
+                                                    //   items: [],
+                                                    // child: Container(
+                                                    //   color: const Color.fromARGB(
+                                                    //     255,
+                                                    //     238,
+                                                    //     248,
+                                                    //     252,
+                                                    //   ),
+                                                    //   padding: EdgeInsets.all(4),
+                                                    //   child: Row(
+                                                    //     children: [
+                                                    //       Text(
+                                                    //         // overflow: TextOverflow.ellipsis,
+                                                    //         textAlign: TextAlign.center,
+                                                    //         '${lead['quality']} Quality',
+                                                    //         style: TextStyle(
+                                                    //           fontSize: 11,
+                                                    //           color: Colors.black,
+                                                    //         ),
+                                                    //       ),
+                                                    //       Icon(Icons.arrow_drop_down),
+                                                    //     ],
+                                                    //   ),
+                                                    // ),
+                                                    // ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                    ],
+                                  ),
+
+                                  (leadData.length == 0)
+                                      ? Center(
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                msg,
+                                                style: TextStyle(
+                                                  color: (logi)
+                                                      ? Colors.green
+                                                      : Colors.red,
+                                                ),
+                                              ),
+                                              IconButton(
+                                                onPressed: () {
+                                                  getleads();
+                                                },
+                                                icon: Icon(
+                                                  Icons.refresh,
+                                                  color: (logi)
+                                                      ? Colors.green
+                                                      : Colors.red,
                                                 ),
                                               ),
                                             ],
                                           ),
-                                        ],
-                                      ),
-                                  ],
-                                ),
-
-                                (leadData.length == 0)
-                                    ? Column(
-                                        children: [
-                                          Divider(),
-                                          Container(
-                                            child: Center(
-                                              child: Text(
-                                                "No Data found",
-                                                style: TextStyle(fontSize: 14),
+                                        )
+                                      : (leadData.length == 0 && logi == false)
+                                      ? Column(
+                                          children: [
+                                            Divider(),
+                                            Container(
+                                              child: Center(
+                                                child: Text(
+                                                  "No Data found",
+                                                  style: TextStyle(
+                                                    fontSize: 14,
+                                                  ),
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                          SizedBox(height: 30),
-                                        ],
-                                      )
-                                    : Text(""),
+                                            SizedBox(height: 30),
+                                          ],
+                                        )
+                                      : Text(""),
 
+                                  // (leadData.length == 0)
+                                  // ? Column(
+                                  //     children: [
+                                  //       // Divider(),
+                                  //       IconButton(
+                                  //         onPressed: (){
+                                  //           if(cp <= 1){
+                                  //             return;
+                                  //           }
+                                  //           cp--;
+                                  //           setState(() {
 
-                                    (leadData.length == 0)
-                                    ? Column(
-                                        children: [
-                                          // Divider(),
-                                          IconButton(
-                                            onPressed: (){
-                                              if(cp <= 1){
-                                                return;
-                                              }
-                                              cp--;
-                                              setState({}),
-                                            },
-                                            Icon(Icons.next),
-                                          ),
-                                          Container(
-                                            child: Center(
-                                              child: Text(
-                                                cp,
-                                                style: TextStyle(fontSize: 14),
-                                              ),
+                                  //           });
+                                  //         },
+                                  //         icon:Icon(Icons.back),
+                                  //       ),
+                                  //       Container(
+                                  //         child: Center(
+                                  //           child: Text(
+                                  //             cp,
+                                  //             style: TextStyle(fontSize: 14),
+                                  //           ),
+                                  //         ),
+                                  //       ),
+                                  //       SizedBox(height: 30),
+                                  //       IconButton(
+                                  //         onPressed: (){
+                                  //           if(cp >= mx){
+                                  //             return;
+                                  //           }
+                                  //           cp++;
+                                  //           setState(() {
+
+                                  //           });
+                                  //         },
+                                  //         icon:Icon(Icons.next_plan),
+                                  //       ),
+                                  //     ],
+                                  //   ): Text(""),
+                                  (leadData.length < 10 && cp == 1)
+                                      ? Container()
+                                      : Card(
+                                          // decoration: BoxDecoration(
+                                          //   borderRadius: BorderRadius.circular(12),
+                                          //   color: Colors.white,
+                                          // ),
+                                          color: Colors.white,
+                                          child: Center(
+                                            child: Row(
+                                              // spacing: 8,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
+                                              children: List.generate(7, (ind) {
+                                                int index = cp + ind - 3;
+                                                int mxpg =
+                                                    (leadData.length < 10)
+                                                    ? cp
+                                                    : cp + 1;
+                                                if (ind == 0 || ind == 6) {
+                                                  return IconButton(
+                                                    style: ButtonStyle(),
+                                                    icon: Icon(
+                                                      ind == 0
+                                                          ? Icons.chevron_left
+                                                          : Icons.chevron_right,
+                                                      // size: 10,
+                                                    ),
+                                                    onPressed: () {
+                                                      if ((cp == 1 &&
+                                                              ind == 0) ||
+                                                          (ind == 6 &&
+                                                              cp >= mxpg)) {
+                                                        return;
+                                                      }
+
+                                                      leadData = [];
+                                                      msg = "Loading";
+                                                      logi = true;
+
+                                                      ind == 0 ? cp-- : cp++;
+
+                                                      setState(() {
+                                                        // g1 = false;
+                                                      });
+                                                      // _gettran();
+                                                      getleads();
+                                                    },
+                                                  );
+                                                } else if (ind + cp - 3 < 1) {
+                                                  return SizedBox(width: 30);
+                                                } else if (ind + cp - 3 >
+                                                    mxpg) {
+                                                  return SizedBox(width: 30);
+                                                } else {
+                                                  return GestureDetector(
+                                                    onTap: () {
+                                                      if (ind + cp - 3 == cp) {
+                                                        return;
+                                                      }
+                                                      cp = cp + ind - 3;
+
+                                                      // _gettran();
+                                                      leadData = [];
+                                                      msg = "Loading";
+                                                      logi = true;
+                                                      setState(() {
+                                                        // g4 = false;
+                                                      });
+                                                      // g1 = false;
+                                                      getleads();
+                                                      if (!mounted) {
+                                                      } else {
+                                                        setState(() {});
+                                                      }
+                                                    },
+                                                    child: Container(
+                                                      width: 30,
+                                                      padding:
+                                                          EdgeInsets.symmetric(
+                                                            horizontal: 8,
+                                                          ),
+                                                      decoration: (index == cp)
+                                                          ? BoxDecoration(
+                                                              borderRadius:
+                                                                  BorderRadius.circular(
+                                                                    (index ==
+                                                                            -1)
+                                                                        ? 12
+                                                                        : 0,
+                                                                  ),
+                                                              border: Border.all(
+                                                                width:
+                                                                    (index == 2)
+                                                                    ? 0.5
+                                                                    : 0,
+                                                              ),
+                                                            )
+                                                          : BoxDecoration(),
+                                                      child: Padding(
+                                                        padding:
+                                                            const EdgeInsets.symmetric(
+                                                              vertical: 8.0,
+                                                              // horizontal: 15,
+                                                            ),
+                                                        child: Text(
+                                                          textAlign:
+                                                              TextAlign.center,
+                                                          "${index}",
+                                                          style: TextStyle(
+                                                            fontSize: 14,
+                                                          ),
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  );
+                                                }
+                                              }),
                                             ),
                                           ),
-                                          SizedBox(height: 30),
-                                          IconButton(
-                                            onPressed: (){
-                                              if(cp >= mx){
-                                                return;
-                                              }
-                                              cp++;
-                                              setState({}),
-                                            },
-                                            Icon(Icons.next),
-                                          ),
-                                        ],
-                                      ): Text(""),
-                              ],
+                                        ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(height: 40),
-                ],
+                    SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
     );
