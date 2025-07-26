@@ -8,6 +8,7 @@ import 'package:bauntan/other/compo.dart';
 import 'package:bauntan/other/drawer.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+
 import 'package:http/http.dart' as http;
 import 'package:share_plus/share_plus.dart';
 
@@ -43,11 +44,14 @@ class _EarningPageState extends State<EarningPage> {
   final TextEditingController ctl = TextEditingController();
   String chos = "3 Months";
 
+  bool process = true;
+
   @override
   void initState() {
     super.initState();
     chos = "3 Months";
     updateDateRange("3M");
+
     // _getperf();
   }
 
@@ -82,9 +86,11 @@ class _EarningPageState extends State<EarningPage> {
 
         if (!mounted) return;
         msg = "data found!";
+        process = true;
 
         setState(() {});
       } else {
+        process = false;
         // print("Server Error: ${res.body}");
         if (!mounted) return;
         msg = "Server Error!";
@@ -92,6 +98,7 @@ class _EarningPageState extends State<EarningPage> {
         setState(() {});
       }
     } catch (e) {
+      process = false;
       print("Network Error: $e");
       if (!mounted) return;
       msg = "Network Error!";
@@ -155,35 +162,166 @@ class _EarningPageState extends State<EarningPage> {
       drawer: AppDrawer(page: 3),
 
       body: RefreshIndicator(
+        color: Colors.blue,
+        backgroundColor: Colors.white,
         onRefresh: _refreshData,
         child: ListView(
           padding: EdgeInsets.all(16),
           children: [
-            _headerSection(),
-            SizedBox(height: 15),
-            _linkSection(),
-            SizedBox(height: 15),
-            _actionButtons(),
-            SizedBox(height: 15),
-            (Perfo == null)
-                ? Center(
-                    child: Column(
-                      children: [
-                        Text(
-                          msg,
-                          style: TextStyle(
-                            color: (msg == "Loading")
-                                ? Colors.green
-                                : Colors.red,
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        // color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      height: 50,
+                      child: TextField(
+                        // cursorHeight: 100,
+                        controller: ctl,
+                        readOnly: true,
+                        style: TextStyle(color: Colors.blue, fontSize: 16),
+
+                        decoration: InputDecoration(
+                          hintText:
+                              (Stat == null || Stat["referralLink"] == null)
+                              ? 'https://bounten.com/lakshit'
+                              : "${Stat["referralLink"]}",
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.qr_code, color: adth),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => QrPage(),
+                              );
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+
+                            borderSide: BorderSide(color: adth),
+                          ),
+                          hintStyle: TextStyle(color: adth),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 3),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 0.0),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      copyText(
+                        (Stat == null || Stat["referralLink"] == null)
+                            ? 'https://bounten.com/lakshit'
+                            : "${Stat["referralLink"]}",
+                      );
+                    },
+                    child: Card(
+                      child: Container(
+                        // height: 50,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: adth,
+                        ),
+                        // width: 160,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.copy, color: Colors.white, size: 20),
+                              SizedBox(width: 5),
+                              Text(
+                                'Copy Link',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
                           ),
                         ),
-                        IconButton(
-                          onPressed: () {
-                            _getperf();
-                          },
-                          icon: Icon(Icons.refresh),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 15),
+            _headerSection(),
+            // SizedBox(height: 15),
+            // _linkSection(),
+            // SizedBox(height: 15),
+            // _actionButtons(),
+            SizedBox(height: 8),
+            (Perfo == null)
+                ? Card(
+                    color: Colors.white,
+                    child: Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              (msg == "Loading") ? "" : msg,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: (msg == "Loading")
+                                    ? Colors.black
+                                    : Colors.red,
+                              ),
+                            ),
+                            // RefreshProgressIndicator(s),
+                            IconButton(
+                              onPressed: () {
+                                msg = "Loading";
+                                process = true;
+                                setState(() {});
+                                _getperf();
+                              },
+                              icon: (process)
+                                  ? RefreshProgressIndicator(
+                                      color: Colors.blue,
+                                      backgroundColor: Colors.white,
+                                    )
+                                  : Icon(
+                                      Icons.refresh,
+                                      size: 28,
+                                      color: (msg == "Loading")
+                                          ? Colors.black
+                                          : Colors.red,
+                                    ),
+                            ),
+                            // Text(
+                            //   msg,
+                            //   style: TextStyle(
+                            //     color: (msg == "Loading")
+                            //         ? Colors.green
+                            //         : Colors.red,
+                            //   ),
+                            // ),
+                            // IconButton(
+                            //   onPressed: () {
+                            //     _getperf();
+                            //   },
+                            //   icon: Icon(Icons.refresh),
+                            // ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   )
                 : Column(
@@ -214,7 +352,23 @@ class _EarningPageState extends State<EarningPage> {
   AppBar _buildAppBar() {
     return AppBar(
       surfaceTintColor: Colors.white,
-      title: Image.asset('assets/logo2.jpg', height: 40),
+      title: Row(
+        children: [
+          Image.asset('assets/logo2.jpg', height: 40),
+          SizedBox(width: 7),
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black12, width: 1),
+              borderRadius: BorderRadius.circular(5),
+            ),
+            padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+            child: Text(
+              "${Afpro["profile"]["lead_stage"]}",
+              style: TextStyle(fontSize: 11, color: Colors.blueAccent),
+            ),
+          ),
+        ],
+      ),
       backgroundColor: Colors.white,
       actions: [
         GestureDetector(
@@ -254,7 +408,11 @@ class _EarningPageState extends State<EarningPage> {
             width: 200,
             child: Text(
               "Traffic and Earning overview",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: blackTitle,
+              ),
               overflow: TextOverflow.ellipsis,
               maxLines: 5,
             ),
@@ -416,10 +574,24 @@ class _EarningPageState extends State<EarningPage> {
 
     return LineChart(
       LineChartData(
+        minY: 0,
+        maxY: _getMaxYWithBuffer(trafficData),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 40,
+              // interval: _getInterval(earningsData), // ✅ custom intervals
+              getTitlesWidget: (value, _) => Text(
+                value.toInt().toString(),
+                style: const TextStyle(fontSize: 11),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
           bottomTitles: AxisTitles(
             sideTitles: SideTitles(
               showTitles: true,
@@ -427,6 +599,7 @@ class _EarningPageState extends State<EarningPage> {
                 return Text(
                   (value.toInt() < months.length) ? months[value.toInt()] : '',
                   style: TextStyle(fontSize: 11),
+                  // sslkajl,
                 );
               },
             ),
@@ -451,6 +624,36 @@ class _EarningPageState extends State<EarningPage> {
     );
   }
 
+  double _getMaxYWithBuffer(List<double> values) {
+    double max = values.reduce((a, b) => a > b ? a : b);
+    // Add 10% buffer to ensure the topmost value is visible
+    double x = (max * 1.1).roundToDouble();
+
+    double mul = 1;
+
+    double val = (x > 100) ? 100 : 10;
+
+    while (x >= val) {
+      x /= 10;
+      x = x.roundToDouble();
+      mul *= 10;
+    }
+
+    return x * mul;
+  }
+
+  double _getInterval(List<double> values) {
+    double max = values.reduce((a, b) => a > b ? a : b);
+    if (max <= 10) return 2;
+    if (max <= 100) return 10;
+    if (max <= 1000) return 100;
+
+    if (max <= 10000) return 1000;
+
+    if (max <= 100000) return 10000;
+    return (max / 5).roundToDouble(); // dynamic spacing
+  }
+
   Widget _buildEarningsChart() {
     List months = (Perfo!["data"]["earnings"]["monthly"] as List)
         .map((e) => e["month"] ?? "")
@@ -458,8 +661,26 @@ class _EarningPageState extends State<EarningPage> {
 
     return BarChart(
       BarChartData(
+        maxY: // 100000,
+        _getMaxYWithBuffer(
+          earningsData,
+        ), // ✅ ensure highest value is visible
+        minY: 0,
+        gridData: FlGridData(show: true),
         borderData: FlBorderData(show: false),
         titlesData: FlTitlesData(
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              reservedSize: 60,
+              // interval: _getInterval(earningsData), // ✅ custom intervals
+              getTitlesWidget: (value, _) => Text(
+                value.toInt().toString(),
+                style: const TextStyle(fontSize: 11),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
           rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
           bottomTitles: AxisTitles(

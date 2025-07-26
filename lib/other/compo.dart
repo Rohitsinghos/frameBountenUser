@@ -13,127 +13,151 @@ class QrPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery.of(context).size.width;
     return Dialog(
       insetAnimationDuration: Duration(seconds: 3),
       insetAnimationCurve: Curves.easeInBack,
       backgroundColor: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                      child: Icon(
-                        Icons.cancel,
-                        size: 30,
-                        color: Colors
-                            .blue, // const Color.fromARGB(255, 111, 110, 110),
+      // shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+
+        // Get available height and width of the build area of this widget. Make a choice depending on the size.
+      ),
+      child: Container(
+        // height: height - 400,
+        width: width - 0,
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                        child: Icon(
+                          Icons.cancel,
+                          size: 28,
+                          color: Colors
+                              .blue, // const Color.fromARGB(255, 111, 110, 110),
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(height: 10),
-              Text(
-                "Scan QrCode or Copy link",
-                textAlign: TextAlign.left,
-                style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
-              ),
+                SizedBox(height: 10),
+                Text(
+                  "Scan this QR to redirect to the website",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 22,
+                    // fontWeight: FontWeight.bold,
+                    color: blackTitle,
+                  ),
+                ),
 
-              SizedBox(height: 15),
+                SizedBox(height: 25),
 
-              QrImageView(
-                data: '${Stat["referralLink"]}',
-                size: 200,
-                version: QrVersions.auto,
-              ),
+                QrImageView(
+                  data: '${Stat["referralLink"]}',
+                  size: 220,
+                  version: QrVersions.auto,
+                ),
 
-              // Icon(Icons.image),
-              SizedBox(height: 25),
+                // Icon(Icons.image),
+                SizedBox(height: 35),
 
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Card(
-                      child: Container(
-                        width: 220,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: MaterialButton(
-                            color: adth,
-                            onPressed: () {
-                              copyText(
-                                (Stat == null || Stat["referralLink"] == null)
-                                    ? 'https://bounten.com/lakshit'
-                                    : "${Stat["referralLink"]}",
-                              );
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.copy, color: Colors.white),
-                                Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    'Copy Link',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Card(
+                        child: Container(
+                          // width: 200,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: MaterialButton(
+                              color: adth,
+                              // padding: EdgeInsets.symmetric(horizontal: 10),
+                              onPressed: () {
+                                copyText(
+                                  (Stat == null || Stat["referralLink"] == null)
+                                      ? 'https://bounten.com/lakshit'
+                                      : "${Stat["referralLink"]}",
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 13.0,
+                                  horizontal: 10,
                                 ),
-                              ],
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Icons.copy, color: Colors.white),
+                                    SizedBox(width: 15),
+                                    Padding(
+                                      padding: const EdgeInsets.all(0.0),
+                                      child: Text(
+                                        'Copy Link',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                    Card(
-                      borderOnForeground: false,
-                      child: Container(
-                        width: 220,
 
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: adth),
-                        ),
-                        child: ClipRRect(
-                          borderRadius: BorderRadiusGeometry.circular(12),
-                          child: MaterialButton(
-                            color: Colors.white,
-                            onPressed: () {
-                              shareImageAndText();
-                            },
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.share_outlined, color: adth),
-                                Padding(
-                                  padding: const EdgeInsets.all(15.0),
-                                  child: Text(
-                                    'Share',
-                                    style: TextStyle(color: adth),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                      // Card(
+                      //   borderOnForeground: false,
+                      //   child: Container(
+                      //     width: 220,
+
+                      //     decoration: BoxDecoration(
+                      //       borderRadius: BorderRadius.circular(12),
+                      //       border: Border.all(color: adth),
+                      //     ),
+                      //     child: ClipRRect(
+                      //       borderRadius: BorderRadiusGeometry.circular(12),
+                      //       child: MaterialButton(
+                      //         color: Colors.white,
+                      //         onPressed: () {
+                      //           shareImageAndText();
+                      //         },
+                      //         child: Row(
+                      //           mainAxisAlignment: MainAxisAlignment.center,
+                      //           children: [
+                      //             Icon(Icons.share_outlined, color: adth),
+                      //             Padding(
+                      //               padding: const EdgeInsets.all(15.0),
+                      //               child: Text(
+                      //                 'Share',
+                      //                 style: TextStyle(color: adth),
+                      //               ),
+                      //             ),
+                      //           ],
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -260,6 +284,258 @@ class LogoutPage extends StatelessWidget {
                                   padding: const EdgeInsets.all(15.0),
                                   child: Text(
                                     'Yes',
+                                    style: TextStyle(color: adth),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ExitPage extends StatelessWidget {
+  const ExitPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetAnimationDuration: Duration(seconds: 3),
+      insetAnimationCurve: Curves.easeInBack,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Icon(
+                        Icons.cancel,
+                        size: 30,
+                        color: Colors
+                            .blue, // const Color.fromARGB(255, 111, 110, 110),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Are you sure, Exit App??",
+                textAlign: TextAlign.left,
+                style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+              ),
+
+              SizedBox(height: 15),
+
+              // QrImageView(
+              //   data: '${Stat["referralLink"]}',
+              //   size: 200,
+              //   version: QrVersions.auto,
+              // ),
+
+              // // Icon(Icons.image),
+              // SizedBox(height: 25),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Card(
+                      child: Container(
+                        width: 220,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: MaterialButton(
+                            color: adth,
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Text(
+                                    'No',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Card(
+                      borderOnForeground: false,
+                      child: Container(
+                        width: 220,
+
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: adth),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadiusGeometry.circular(12),
+                          child: MaterialButton(
+                            color: Colors.white,
+                            onPressed: () {
+                              Navigator.of(context).pop(true);
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Text(
+                                    'Yes',
+                                    style: TextStyle(color: adth),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class GetPicPage extends StatelessWidget {
+  const GetPicPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetAnimationDuration: Duration(seconds: 3),
+      insetAnimationCurve: Curves.easeInBack,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                      child: Icon(
+                        Icons.cancel,
+                        size: 30,
+                        color: Colors
+                            .blue, // const Color.fromARGB(255, 111, 110, 110),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10),
+              Text(
+                "Select, Image Source?",
+                textAlign: TextAlign.left,
+                style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold),
+              ),
+
+              SizedBox(height: 15),
+
+              // QrImageView(
+              //   data: '${Stat["referralLink"]}',
+              //   size: 200,
+              //   version: QrVersions.auto,
+              // ),
+
+              // // Icon(Icons.image),
+              // SizedBox(height: 25),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Card(
+                      child: Container(
+                        width: 220,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: MaterialButton(
+                            color: adth,
+                            onPressed: () {
+                              Navigator.of(context).pop(true);
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Text(
+                                    'Camera',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    Card(
+                      borderOnForeground: false,
+                      child: Container(
+                        width: 220,
+
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: adth),
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadiusGeometry.circular(12),
+                          child: MaterialButton(
+                            color: Colors.white,
+                            onPressed: () {
+                              Navigator.of(context).pop(false);
+                            },
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.all(15.0),
+                                  child: Text(
+                                    'Galley',
                                     style: TextStyle(color: adth),
                                   ),
                                 ),

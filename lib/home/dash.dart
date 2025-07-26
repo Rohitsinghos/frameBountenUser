@@ -40,6 +40,8 @@ class DashboardPage extends StatefulWidget {
 }
 
 class _DashboardPageState extends State<DashboardPage> {
+  bool process = true;
+
   String load = "Loading";
   final List<Map<String, String>> leads = List.generate(
     10,
@@ -84,7 +86,7 @@ class _DashboardPageState extends State<DashboardPage> {
       // https://bountenapi.socialseller.in/api/affiliate/transactions/37?pagination[page]=1&pagination[pageSize]=5
 
       if (res.statusCode == 200) {
-        // print(jsonDecode(res.body));
+        print(jsonDecode(res.body));
 
         Afpro = jsonDecode(res.body);
 
@@ -103,90 +105,90 @@ class _DashboardPageState extends State<DashboardPage> {
         setState(() {});
       }
 
-      final res5 = await http.get(
-        Uri.parse(
-          "${BASE_URL}/affiliate/performance-overview?startDate=2025-06-16&endDate=2025-07-16",
-        ),
+      // final res5 = await http.get(
+      //   Uri.parse(
+      //     "${BASE_URL}/affiliate/performance-overview?startDate=2025-06-16&endDate=2025-07-16",
+      //   ),
 
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${userToken}',
-        },
-      );
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Accept': 'application/json',
+      //     'Authorization': 'Bearer ${userToken}',
+      //   },
+      // );
 
-      // https://bountenapi.socialseller.in/api/affiliate/transactions/37?pagination[page]=1&pagination[pageSize]=5
+      // // https://bountenapi.socialseller.in/api/affiliate/transactions/37?pagination[page]=1&pagination[pageSize]=5
 
-      if (res5.statusCode == 200) {
-        // print(jsonDecode(res5.body));
+      // if (res5.statusCode == 200) {
+      //   // print(jsonDecode(res5.body));
 
-        Perfo = jsonDecode(res5.body);
-      } else {
-        print("faillled");
-        load = "Something wrong with sever!";
-        if (!mounted) return;
+      //   Perfo = jsonDecode(res5.body);
+      // } else {
+      //   print("faillled");
+      //   load = "Something wrong with sever!";
+      //   if (!mounted) return;
 
-        setState(() {});
-      }
+      //   setState(() {});
+      // }
 
-      final res4 = await http.get(
-        Uri.parse(
-          "${BASE_URL}/affiliate/transactions/37?pagination[page]=1&pagination[pageSize]=5",
-        ),
+      // final res4 = await http.get(
+      //   Uri.parse(
+      //     "${BASE_URL}/affiliate/transactions/37?pagination[page]=1&pagination[pageSize]=5",
+      //   ),
 
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${userToken}',
-        },
-      );
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Accept': 'application/json',
+      //     'Authorization': 'Bearer ${userToken}',
+      //   },
+      // );
 
-      // https://bountenapi.socialseller.in/api
+      // // https://bountenapi.socialseller.in/api
 
-      if (res4.statusCode == 200) {
-        // print(jsonDecode(res.body));
+      // if (res4.statusCode == 200) {
+      //   // print(jsonDecode(res.body));
 
-        Trans = jsonDecode(res4.body);
-      } else {
-        print("nndnndndnnd");
-        load = "Something wrong with sever!";
-        if (!mounted) return;
+      //   Trans = jsonDecode(res4.body);
+      // } else {
+      //   print("nndnndndnnd");
+      //   load = "Something wrong with sever!";
+      //   if (!mounted) return;
 
-        setState(() {});
-      }
+      //   setState(() {});
+      // }
 
-      final res2 = await http.get(
-        Uri.parse(
-          "${BASE_URL}/affiliate/profile?pagination[page]=1&pagination[pageSize]=10",
-        ),
+      // final res2 = await http.get(
+      //   Uri.parse(
+      //     "${BASE_URL}/affiliate/profile?pagination[page]=1&pagination[pageSize]=10",
+      //   ),
 
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer ${userToken}',
-        },
-      );
+      //   headers: {
+      //     'Content-Type': 'application/json',
+      //     'Accept': 'application/json',
+      //     'Authorization': 'Bearer ${userToken}',
+      //   },
+      // );
 
-      if (res2.statusCode == 200) {
-        // print(jsonDecode(res2.body));
+      // if (res2.statusCode == 200) {
+      //   // print(jsonDecode(res2.body));
 
-        Afpro5 = jsonDecode(res2.body);
-        leadData = Afpro5["leads"];
+      //   Afpro5 = jsonDecode(res2.body);
+      //   leadData = Afpro5["leads"];
 
-        g2 = true;
+      g2 = true;
 
-        if (!mounted) return;
+      //   if (!mounted) return;
 
-        if (g1 && g2 && g3) {
-          setState(() {});
-        }
-      } else {
-        print("nndnndndnnd");
-        load = "Something wrong with sever!";
-        if (!mounted) return;
+      //   if (g1 && g2 && g3) {
+      //     setState(() {});
+      //   }
+      // } else {
+      //   print("nndnndndnnd");
+      //   load = "Something wrong with sever!";
+      //   if (!mounted) return;
 
-        setState(() {});
-      }
+      //   setState(() {});
+      // }
 
       final res3 = await http.get(
         Uri.parse("${BASE_URL}/affiliate/stats"),
@@ -224,12 +226,21 @@ class _DashboardPageState extends State<DashboardPage> {
       }
     } catch (e) {
       print(e);
+      process = false;
       load = "Internet not working!";
       if (!mounted) return;
 
       setState(() {});
     }
   }
+
+  Map<String, Color> Stcol = {
+    "Hot": Colors.orange,
+    "Warm": Colors.blue,
+    "Cold": Colors.deepOrangeAccent,
+    "Sold": Colors.green,
+    "Rejected": Colors.red,
+  };
 
   final _pickImage = null;
 
@@ -317,8 +328,10 @@ class _DashboardPageState extends State<DashboardPage> {
       final res = await http.get(
         Uri.parse(
           (tabb == 0)
-              ? "${BASE_URL}/affiliate/profile?pagination[page]=${cp}&pagination[pageSize]=10"
-              : "${BASE_URL}/affiliate/profile?pagination[page]=${cp}&pagination[pageSize]=10&status=${tabst[tabb]}",
+              ? "${BASE_URL}/affiliate/profile"
+              //?pagination[page]=${cp}&pagination[pageSize]=10"
+              : "${BASE_URL}/affiliate/profile?status=${tabst[tabb]}",
+          // "${BASE_URL}/affiliate/profile?pagination[page]=${cp}&pagination[pageSize]=10&status=${tabst[tabb]}",
         ),
 
         headers: {
@@ -362,6 +375,7 @@ class _DashboardPageState extends State<DashboardPage> {
       }
     } catch (e) {
       print(e);
+      process = false;
 
       load = "Network error!";
       msg = load;
@@ -382,20 +396,22 @@ class _DashboardPageState extends State<DashboardPage> {
         // Show the confirmation dialog
         final shouldExit = await showDialog<bool>(
           context: context,
-          builder: (context) => AlertDialog(
-            title: Text('Exit App', style: TextStyle(color: adth)),
-            content: Text('Do you want to exit the app?'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: Text('No'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: Text('Yes'),
-              ),
-            ],
-          ),
+          builder: (context) => ExitPage(),
+
+          // AlertDialog(
+          //   title: Text('Exit App', style: TextStyle(color: adth)),
+          //   content: Text('Do you want to exit the app?'),
+          //   actions: [
+          //     TextButton(
+          //       onPressed: () => Navigator.of(context).pop(false),
+          //       child: Text('No'),
+          //     ),
+          //     TextButton(
+          //       onPressed: () => Navigator.of(context).pop(true),
+          //       child: Text('Yes'),
+          //     ),
+          //   ],
+          // ),
         );
         // If the user confirmed, exit the app
         return shouldExit ?? false;
@@ -411,21 +427,34 @@ class _DashboardPageState extends State<DashboardPage> {
 
                     children: [
                       Text(
-                        load,
+                        (load == "Loading") ? "" : load,
                         style: TextStyle(
                           fontSize: 16,
                           color: (load == "Loading")
-                              ? Colors.green
+                              ? Colors.black
                               : Colors.red,
                         ),
                       ),
+                      // RefreshProgressIndicator(s),
                       IconButton(
                         onPressed: () {
                           load = "Loading";
+                          process = true;
                           setState(() {});
                           _getProfileData();
                         },
-                        icon: Icon(Icons.refresh, color: Colors.blue),
+                        icon: (process)
+                            ? RefreshProgressIndicator(
+                                color: Colors.blue,
+                                backgroundColor: Colors.white,
+                              )
+                            : Icon(
+                                Icons.refresh,
+                                size: 28,
+                                color: (load == "Loading")
+                                    ? Colors.black
+                                    : Colors.red,
+                              ),
                       ),
                     ],
                   ),
@@ -437,7 +466,26 @@ class _DashboardPageState extends State<DashboardPage> {
               // backgroundColor: const Color.fromARGB(255, 238, 248, 252),
               appBar: AppBar(
                 surfaceTintColor: Colors.white,
-                title: Image.asset('assets/logo2.jpg', height: 40),
+                title: Row(
+                  children: [
+                    Image.asset('assets/logo2.jpg', height: 40),
+                    SizedBox(width: 7),
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black12, width: 1),
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      child: Text(
+                        "${Afpro["profile"]["lead_stage"]}",
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.blueAccent,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
                 backgroundColor: Colors.white,
                 // leading: Builder(
                 //   builder: (context) => IconButton(
@@ -484,64 +532,33 @@ class _DashboardPageState extends State<DashboardPage> {
               ),
               drawer: AppDrawer(page: 1),
               body: RefreshIndicator(
+                color: Colors.blue,
+                backgroundColor: Colors.white,
+
                 onRefresh: _refreshData,
                 child: ListView(
                   padding: EdgeInsets.symmetric(vertical: 10),
                   children: [
-                    Wrap(
-                      alignment: WrapAlignment.center,
-                      children: [
-                        _buildStatCard(
-                          "Total Traffic",
-                          (Afpro == null ||
-                                  Afpro["stats"] == null ||
-                                  Afpro["stats"]["totalTraffic"] == null)
-                              ? "15,678"
-                              : "${Afpro["stats"]["totalTraffic"]}",
-                          Icon(Icons.traffic, color: adthAccent),
-                        ),
-                        _buildStatCard(
-                          "Total Leads",
-                          (Afpro == null ||
-                                  Afpro["stats"] == null ||
-                                  Afpro["stats"]["totalLeads"] == null)
-                              ? "15,678"
-                              : "${Afpro["stats"]["totalLeads"]}",
-                          Icon(Icons.group, color: adthAccent),
-                        ),
-                        _buildStatCard(
-                          "Total Earnings",
-                          "₹${(Afpro == null || Afpro["stats"] == null || Afpro["stats"]["totalEarnings"] == null) ? "15,678" : "${(Afpro["stats"]["totalEarnings"]).toInt()}"}",
-                          Icon(Icons.account_balance_wallet, color: adthAccent),
-                        ),
-                        _buildStatCard(
-                          "Pending Leads",
-                          (Afpro == null ||
-                                  Afpro["stats"] == null ||
-                                  Afpro["stats"]["pendingLeadsCount"] == null)
-                              ? "15,678"
-                              : "${Afpro["stats"]["pendingLeadsCount"]}",
-                          Icon(Icons.pending, color: adthAccent),
-                        ),
-                      ],
-                    ),
                     SizedBox(height: 10),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      padding: const EdgeInsets.symmetric(horizontal: 13.0),
                       child: Row(
                         children: [
                           Expanded(
                             child: Container(
                               decoration: BoxDecoration(
                                 // color: Colors.white,
-
-                                // borderRadius: BorderRadius.circular(15),
-                                // border: Border.all(color: adth),
+                                borderRadius: BorderRadius.circular(12),
                               ),
+                              height: 50,
                               child: TextField(
+                                // cursorHeight: 100,
                                 controller: ctl,
                                 readOnly: true,
-                                style: TextStyle(color: Colors.blue),
+                                style: TextStyle(
+                                  color: Colors.blue,
+                                  fontSize: 16,
+                                ),
 
                                 decoration: InputDecoration(
                                   hintText:
@@ -571,71 +588,48 @@ class _DashboardPageState extends State<DashboardPage> {
                         ],
                       ),
                     ),
-                    SizedBox(height: 15),
+                    SizedBox(height: 3),
 
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Card(
-                            child: Container(
-                              width: 160,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: MaterialButton(
-                                  color: adth,
-                                  onPressed: () {
-                                    copyText(
-                                      (Stat == null ||
-                                              Stat["referralLink"] == null)
-                                          ? 'https://bounten.com/lakshit'
-                                          : "${Stat["referralLink"]}",
-                                    );
-                                  },
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Icon(Icons.copy, color: Colors.white),
-                                      Padding(
-                                        padding: const EdgeInsets.all(15.0),
-                                        child: Text(
-                                          'Copy Link',
-                                          style: TextStyle(color: Colors.white),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                          GestureDetector(
+                            onTap: () {
+                              copyText(
+                                (Stat == null || Stat["referralLink"] == null)
+                                    ? 'https://bounten.com/lakshit'
+                                    : "${Stat["referralLink"]}",
+                              );
+                            },
+                            child: Card(
+                              child: Container(
+                                // height: 50,
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 15,
+                                  vertical: 1,
                                 ),
-                              ),
-                            ),
-                          ),
-                          Card(
-                            borderOnForeground: false,
-                            child: Container(
-                              width: 160,
-
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: adth),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: BorderRadiusGeometry.circular(12),
-                                child: MaterialButton(
-                                  color: Colors.white,
-                                  onPressed: () {
-                                    _shareImageAndText();
-                                  },
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: adth,
+                                ),
+                                // width: 160,
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 10.0,
+                                  ),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
-                                      Icon(Icons.share_outlined, color: adth),
-                                      Padding(
-                                        padding: const EdgeInsets.all(15.0),
-                                        child: Text(
-                                          'Share',
-                                          style: TextStyle(color: adth),
-                                        ),
+                                      Icon(
+                                        Icons.copy,
+                                        color: Colors.white,
+                                        size: 20,
+                                      ),
+                                      SizedBox(width: 5),
+                                      Text(
+                                        'Copy Link',
+                                        style: TextStyle(color: Colors.white),
                                       ),
                                     ],
                                   ),
@@ -646,7 +640,164 @@ class _DashboardPageState extends State<DashboardPage> {
                         ],
                       ),
                     ),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18.0,
+                        vertical: 2,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8.0),
+                            child: Text(
+                              "Statistics",
+                              style: TextStyle(
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: const Color.fromARGB(255, 114, 114, 114),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      children: [
+                        _buildStatCard(
+                          "Total Earnings",
+                          //"₹
+                          "${(Afpro == null || Afpro["stats"] == null || Afpro["stats"]["totalEarnings"] == null) ? "15,678" : "${(Afpro["stats"]["totalEarnings"]).toInt()}"}",
+                          Icon(
+                            Icons.account_balance_wallet,
+                            color: adthAccent,
+                            size: 20,
+                          ),
+                        ),
+
+                        _buildStatCard(
+                          "Total Leads",
+                          (Afpro == null ||
+                                  Afpro["stats"] == null ||
+                                  Afpro["stats"]["totalLeads"] == null)
+                              ? "15,678"
+                              : "${Afpro["stats"]["totalLeads"]}",
+                          Icon(Icons.group, color: adthAccent, size: 20),
+                        ),
+                        _buildStatCard(
+                          "Total Traffic",
+                          (Afpro == null ||
+                                  Afpro["stats"] == null ||
+                                  Afpro["stats"]["totalTraffic"] == null)
+                              ? "15,678"
+                              : "${Afpro["stats"]["totalTraffic"]}",
+                          Icon(Icons.bar_chart, color: adthAccent, size: 20),
+                        ),
+
+                        _buildStatCard(
+                          "Pending Leads",
+                          (Afpro == null ||
+                                  Afpro["stats"] == null ||
+                                  Afpro["stats"]["pendingLeadsCount"] == null)
+                              ? "15,678"
+                              : "${Afpro["stats"]["pendingLeadsCount"]}",
+                          Icon(Icons.timelapse, color: adthAccent, size: 20),
+                        ),
+                      ],
+                    ),
                     SizedBox(height: 15),
+
+                    Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(
+                          color: Color.fromARGB(255, 125, 195, 253),
+                          // width: 2,
+                        ),
+                        borderRadius: BorderRadius.circular(10),
+                        color: bg,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 5,
+                      ),
+                      margin: EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundColor: Colors.blue,
+                                radius: 25,
+                                child: Icon(
+                                  Icons.emoji_events_outlined,
+                                  size: 25,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(width: 5),
+
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    "Your Ranking",
+                                    style: TextStyle(
+                                      color: Colors.black26,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                  Text(
+                                    "${Afpro["profile"]["rank"]} out of ${Afpro["profile"]["affiliatesCount"]}",
+                                    style: TextStyle(
+                                      color: Colors.blue,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+
+                          Card(
+                            child: Container(
+                              width: 120,
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: MaterialButton(
+                                  color: adth,
+                                  onPressed: () {},
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 12.0,
+                                    ),
+                                    child: Text(
+                                      'Top\nPerformer',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 2,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    SizedBox(height: 12),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: Column(
@@ -655,7 +806,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
-                              "Leads Quality Analysis",
+                              "Your Leads",
                               style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
@@ -673,7 +824,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
                                     child: Container(
-                                      height: 40,
+                                      height: 50,
                                       child: Padding(
                                         padding: const EdgeInsets.all(3.0),
                                         child: ListView.builder(
@@ -714,13 +865,14 @@ class _DashboardPageState extends State<DashboardPage> {
                                                   child: Padding(
                                                     padding:
                                                         const EdgeInsets.symmetric(
-                                                          horizontal: 8.0,
+                                                          horizontal: 10.0,
+                                                          vertical: 1,
                                                         ),
                                                     child: Center(
                                                       child: Text(
                                                         tabst[index],
                                                         style: TextStyle(
-                                                          fontSize: 14,
+                                                          fontSize: 15,
                                                           color: (index != tabb)
                                                               ? adth
                                                               : Colors.white,
@@ -746,9 +898,10 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ),
                                     // defaultColumnWidth: ,
                                     columnWidths: const {
-                                      // 0: FixedColumnWidth(190),
-                                      1: FixedColumnWidth(80),
+                                      0: FixedColumnWidth(45),
+                                      1: FixedColumnWidth(120),
                                       2: FixedColumnWidth(80),
+                                      3: FixedColumnWidth(85),
                                     },
                                     defaultVerticalAlignment:
                                         TableCellVerticalAlignment.middle,
@@ -761,6 +914,19 @@ class _DashboardPageState extends State<DashboardPage> {
 
                                             child: Text(
                                               textAlign: TextAlign.center,
+                                              'S.No.',
+                                              style: TextStyle(
+                                                fontSize: 13,
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.all(4),
+
+                                            child: Text(
+                                              textAlign: TextAlign.left,
                                               'Name',
                                               style: TextStyle(
                                                 fontSize: 13,
@@ -772,7 +938,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                           Container(
                                             padding: EdgeInsets.all(4),
                                             child: Text(
-                                              textAlign: TextAlign.center,
+                                              textAlign: TextAlign.left,
                                               'Location',
                                               style: TextStyle(
                                                 fontSize: 13,
@@ -782,9 +948,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                             ),
                                           ),
                                           Container(
-                                            padding: EdgeInsets.all(4),
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 5,
+                                              horizontal: 1,
+                                            ),
                                             child: Text(
-                                              textAlign: TextAlign.center,
+                                              textAlign: TextAlign.left,
                                               'Lead Quality Analysis',
                                               style: TextStyle(
                                                 fontSize: 13,
@@ -808,12 +977,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                         TableRow(
                                           children: [
                                             Container(
-                                              height: 50,
+                                              // height: 50,
                                               color: Colors.white,
                                               padding: EdgeInsets.all(4),
                                               child: Center(
                                                 child: Text(
-                                                  leadData[i]["name"],
+                                                  "${i + 1}",
                                                   style: TextStyle(
                                                     fontSize: 12,
                                                     color: Colors.black,
@@ -822,147 +991,82 @@ class _DashboardPageState extends State<DashboardPage> {
                                               ),
                                             ),
                                             Container(
+                                              // height: 50,
+                                              color: Colors.white,
+                                              padding: EdgeInsets.all(10),
+                                              child: Text(
+                                                leadData[i]["name"],
+                                                style: TextStyle(
+                                                  fontSize: 12,
+                                                  color: Colors.black,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                                maxLines: 3,
+                                              ),
+                                            ),
+                                            Container(
                                               color: Colors.white,
                                               padding: EdgeInsets.all(4),
                                               child: Text(
-                                                // overflow: TextOverflow.ellipsis,
-                                                textAlign: TextAlign.center,
+                                                overflow: TextOverflow.ellipsis,
+                                                // textAlign: TextAlign.center,
                                                 leadData[i]["location"],
                                                 style: TextStyle(
                                                   fontSize: 12,
                                                   color: Colors.black,
                                                 ),
+                                                maxLines: 2,
                                               ),
                                             ),
 
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Container(
-                                                  decoration: BoxDecoration(
-                                                    color: const Color.fromARGB(
-                                                      255,
-                                                      238,
-                                                      248,
-                                                      252,
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                    vertical: 10.0,
+                                                  ),
+                                              child: Row(
+                                                children: [
+                                                  Container(
+                                                    decoration: BoxDecoration(
+                                                      color:
+                                                          Stcol["${leadData[i]["status"]}"]
+                                                              ?.withOpacity(
+                                                                0.2,
+                                                              ),
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                            5,
+                                                          ),
                                                     ),
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                          5,
+                                                    padding:
+                                                        EdgeInsets.symmetric(
+                                                          vertical: 5,
+                                                          horizontal: 5,
                                                         ),
-                                                  ),
-                                                  padding: EdgeInsets.symmetric(
-                                                    vertical: 5,
-                                                    horizontal: 5,
-                                                  ),
 
-                                                  child: Center(
                                                     child: Text(
                                                       "${leadData[i]["status"]}",
+
                                                       style: TextStyle(
-                                                        color: Colors.blue,
+                                                        color:
+                                                            Stcol["${leadData[i]["status"] ?? "Sold"}"],
                                                       ),
                                                     ),
-
-                                                    //  DropdownButton<String>(
-                                                    //   // padding: EdgeInsets.symmetric(
-                                                    //   //   horizontal: 5,
-                                                    //   // ),
-                                                    //   alignment: Alignment.center,
-
-                                                    //   value: selectedValue,
-                                                    //   icon: Icon(
-                                                    //     Icons.arrow_drop_down,
-                                                    //   ),
-                                                    //   style: TextStyle(
-                                                    //     color: Colors.black,
-                                                    //     fontSize: 11,
-                                                    //   ),
-                                                    //   onChanged:
-                                                    //       (String? newValue) {
-                                                    //         setState(() {
-                                                    //           selectedValue =
-                                                    //               newValue!;
-                                                    //         });
-                                                    //       },
-                                                    //   items:
-                                                    //       <String>[
-                                                    //         'High Quality',
-                                                    //         'Low Quality',
-                                                    //         'Poor Quality',
-                                                    //         'Poori Quality',
-                                                    //         // 'Mango',
-                                                    //       ].map<
-                                                    //         DropdownMenuItem<
-                                                    //           String
-                                                    //         >
-                                                    //       >((String value) {
-                                                    //         return DropdownMenuItem<
-                                                    //           String
-                                                    //         >(
-                                                    //           value: value,
-                                                    //           child: Text(value),
-                                                    //         );
-                                                    //       }).toList(),
-
-                                                    // DropdownButton(
-                                                    //   dropdownColor: const Color.fromARGB(
-                                                    //     255,
-                                                    //     238,
-                                                    //     248,
-                                                    //     252,
-                                                    //   ),
-                                                    //   iconEnabledColor: const Color.fromARGB(
-                                                    //     255,
-                                                    //     238,
-                                                    //     248,
-                                                    //     252,
-                                                    //   ),
-                                                    //   onChanged: (value) {
-                                                    //     // butt = value.toString();
-                                                    //   },
-                                                    //   // value: lead,
-                                                    //   items: [],
-                                                    // child: Container(
-                                                    //   color: const Color.fromARGB(
-                                                    //     255,
-                                                    //     238,
-                                                    //     248,
-                                                    //     252,
-                                                    //   ),
-                                                    //   padding: EdgeInsets.all(4),
-                                                    //   child: Row(
-                                                    //     children: [
-                                                    //       Text(
-                                                    //         // overflow: TextOverflow.ellipsis,
-                                                    //         textAlign: TextAlign.center,
-                                                    //         '${lead['quality']} Quality',
-                                                    //         style: TextStyle(
-                                                    //           fontSize: 11,
-                                                    //           color: Colors.black,
-                                                    //         ),
-                                                    //       ),
-                                                    //       Icon(Icons.arrow_drop_down),
-                                                    //     ],
-                                                    //   ),
-                                                    // ),
-                                                    // ),
                                                   ),
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ],
                                         ),
                                     ],
                                   ),
 
-                                  (leadData.length == 0)
+                                  (leadData.length == 0 && logi == true)
                                       ? Center(
                                           child: Column(
                                             children: [
                                               Text(
-                                                msg,
+                                                (msg == "Loading") ? "" : msg,
                                                 style: TextStyle(
                                                   color: (logi)
                                                       ? Colors.green
@@ -973,12 +1077,19 @@ class _DashboardPageState extends State<DashboardPage> {
                                                 onPressed: () {
                                                   getleads();
                                                 },
-                                                icon: Icon(
-                                                  Icons.refresh,
-                                                  color: (logi)
-                                                      ? Colors.green
-                                                      : Colors.red,
-                                                ),
+                                                icon: (process)
+                                                    ? RefreshProgressIndicator(
+                                                        color: Colors.blue,
+                                                        backgroundColor:
+                                                            Colors.white,
+                                                      )
+                                                    : Icon(
+                                                        Icons.refresh,
+                                                        size: 28,
+                                                        color: (logi)
+                                                            ? Colors.green
+                                                            : Colors.red,
+                                                      ),
                                               ),
                                             ],
                                           ),
@@ -993,6 +1104,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                                   "No Data found",
                                                   style: TextStyle(
                                                     fontSize: 14,
+                                                    color: blacki,
                                                   ),
                                                 ),
                                               ),
@@ -1041,7 +1153,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                   //       ),
                                   //     ],
                                   //   ): Text(""),
-                                  (leadData.length < 10 && cp == 1)
+                                  (true)
                                       ? Container()
                                       : Card(
                                           // decoration: BoxDecoration(
@@ -1184,12 +1296,12 @@ class _DashboardPageState extends State<DashboardPage> {
     return Container(
       padding: EdgeInsets.all(2),
       child: Card(
-        elevation: 2,
+        elevation: 3,
         color: Colors.white,
         child: Container(
           width: 160,
-          height: 90,
-          padding: EdgeInsets.all(10),
+          height: 110,
+          padding: EdgeInsets.symmetric(horizontal: 10),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -1211,18 +1323,22 @@ class _DashboardPageState extends State<DashboardPage> {
                   ),
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 230, 230, 252),
-                      borderRadius: BorderRadius.circular(7),
+                      color: bg,
+                      // borderRadius: BorderRadius.circular(7),
                     ),
 
-                    padding: EdgeInsets.all(3),
+                    padding: EdgeInsets.all(6),
                     child: Ico,
                   ),
                 ],
               ),
               Text(
                 title,
-                style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: blacki,
+                ),
                 overflow: TextOverflow.ellipsis,
               ),
             ],

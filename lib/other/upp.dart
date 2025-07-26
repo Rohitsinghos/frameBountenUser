@@ -38,7 +38,7 @@ class _VideoUploadPageState extends State<VideoUploadPage> {
 
     setState(() => _isUploading = true);
 
-    final uri = Uri.parse("https://bountenapi.socialseller.in/api/uploads");
+    final uri = Uri.parse("${BASE_URL}/uploads");
     final request = http.MultipartRequest("POST", uri);
 
     request.headers.addAll({

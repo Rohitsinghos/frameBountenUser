@@ -6,7 +6,8 @@ Color bg = const Color.fromARGB(255, 238, 248, 252); // Colors.blue.shade50;
 Color adth = Colors.blue;
 Color adthAccent = Colors.blueAccent;
 
-String BASE_URL = "https://bountenapi.socialseller.in/api";
+String BASE_URL = "https://api.bounten.co/api";
+// "https://bountenapi.socialseller.in/api";
 
 Map<String, dynamic> loginData = {};
 
@@ -21,6 +22,10 @@ int tabb = 0;
 List leadData = [];
 
 int ctr = 1;
+
+Color blackTitle = const Color.fromARGB(255, 114, 114, 114);
+
+Color blacki = const Color.fromARGB(255, 155, 155, 155);
 Map<String, dynamic> Afpro = {};
 Map<String, dynamic> Trans = {};
 

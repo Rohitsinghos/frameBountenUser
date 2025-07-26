@@ -52,16 +52,35 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     },
   ];
 
+  bool process = true;
+
   bool logi = false;
 
   Color _getStatusColor(String status) {
     switch (status) {
-      case 'Successful':
-        return Colors.green.shade100;
       case 'Pending':
-        return Colors.orange.shade100;
+        return Colors.blue.shade100;
       case 'Failed':
-        return Colors.red.shade100;
+        return Colors.blue.shade100;
+      case 'Successful':
+        return Colors.blue.withOpacity(0.2);
+
+      case 'Sold':
+        return Colors.green.withOpacity(0.2);
+      case 'Unpaid':
+        return Colors.blue.withOpacity(0.2);
+
+      case "Hot":
+        return Colors.orange.withOpacity(0.2);
+      case "Warm":
+        return Colors.blue.withOpacity(0.2);
+      case "Cold":
+        return Colors.deepOrangeAccent.withOpacity(0.2);
+      case "Sold":
+        return Colors.green.withOpacity(0.2);
+      case "Rejected":
+        return Colors.red.withOpacity(0.2);
+
       default:
         return Colors.grey.shade200;
     }
@@ -71,9 +90,22 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
     switch (status) {
       case 'Sold':
         return Colors.green;
+      case 'Successful':
+        return Colors.blue;
       case 'Pending':
-        return Colors.orange;
+        return Colors.blue;
       case 'Unpaid':
+        return Colors.blue;
+
+      case "Hot":
+        return Colors.orange;
+      case "Warm":
+        return Colors.blue;
+      case "Cold":
+        return Colors.deepOrangeAccent;
+      case "Sold":
+        return Colors.green;
+      case "Rejected":
         return Colors.red;
       default:
         return Colors.black;
@@ -110,6 +142,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
 
         msg = "Data found!";
         logi = true;
+        process = true;
 
         setState(() {});
       } else {
@@ -118,6 +151,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
         logi = false;
 
         msg = "Server error!";
+        process = false;
 
         setState(() {});
 
@@ -127,6 +161,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       print(e);
       if (!mounted) return;
       logi = false;
+      process = false;
 
       msg = "Network error!";
 
@@ -136,6 +171,14 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
 
   int mx = 0;
   int cptrans = 1;
+
+  Map<String, Color> Stcol = {
+    "Hot": Colors.orange,
+    "Warm": Colors.blue,
+    "Cold": Colors.deepOrangeAccent,
+    "Sold": Colors.green,
+    "Rejected": Colors.red,
+  };
 
   @override
   void initState() {
@@ -167,7 +210,23 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       backgroundColor: bg,
       appBar: AppBar(
         surfaceTintColor: Colors.white,
-        title: Image.asset('assets/logo2.jpg', height: 40),
+        title: Row(
+          children: [
+            Image.asset('assets/logo2.jpg', height: 40),
+            SizedBox(width: 7),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black12, width: 1),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              child: Text(
+                "${Afpro["profile"]["lead_stage"]}",
+                style: TextStyle(fontSize: 11, color: Colors.blueAccent),
+              ),
+            ),
+          ],
+        ),
         backgroundColor: Colors.white,
         actions: [
           GestureDetector(
@@ -195,10 +254,105 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
       drawer: AppDrawer(page: 4),
 
       body: RefreshIndicator(
+        color: Colors.blue,
+        backgroundColor: Colors.white,
         onRefresh: _refreshData,
         child: ListView(
-          padding: EdgeInsets.all(16),
+          padding: EdgeInsets.all(10),
           children: [
+            SizedBox(height: 10),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 3.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Container(
+                      height: 50,
+                      decoration: BoxDecoration(
+                        // color: Colors.white,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: TextField(
+                        // cursorHeight: 100,
+                        controller: ctl,
+                        readOnly: true,
+                        style: TextStyle(color: Colors.blue, fontSize: 16),
+
+                        decoration: InputDecoration(
+                          hintText:
+                              (Stat == null || Stat["referralLink"] == null)
+                              ? 'https://bounten.com/lakshit'
+                              : "${Stat["referralLink"]}",
+                          suffixIcon: IconButton(
+                            icon: Icon(Icons.qr_code, color: adth),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => QrPage(),
+                              );
+                            },
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+
+                            borderSide: BorderSide(color: adth),
+                          ),
+                          hintStyle: TextStyle(color: adth),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 3),
+
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 0.0),
+              child: Row(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      copyText(
+                        (Stat == null || Stat["referralLink"] == null)
+                            ? 'https://bounten.com/lakshit'
+                            : "${Stat["referralLink"]}",
+                      );
+                    },
+                    child: Card(
+                      child: Container(
+                        // height: 50,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 15,
+                          vertical: 1,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          color: adth,
+                        ),
+                        // width: 160,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(Icons.copy, color: Colors.white, size: 20),
+                              SizedBox(width: 5),
+                              Text(
+                                'Copy Link',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            SizedBox(height: 15),
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -215,6 +369,7 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                       style: TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.bold,
+                        color: blackTitle,
                       ),
                       overflow: TextOverflow.ellipsis,
                       maxLines: 5,
@@ -223,151 +378,207 @@ class _TransactionHistoryPageState extends State<TransactionHistoryPage> {
                 ],
               ),
             ),
-            SizedBox(height: 15),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        // color: Colors.white,
+            SizedBox(height: 5),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 0),
+            //   child: Row(
+            //     children: [
+            //       Expanded(
+            //         child: Container(
+            //           decoration: BoxDecoration(
+            //             // color: Colors.white,
 
-                        // borderRadius: BorderRadius.circular(15),
-                        // border: Border.all(color: Colors.blue),
-                      ),
-                      child: TextField(
-                        controller: ctl,
-                        readOnly: true,
-                        decoration: InputDecoration(
-                          hintText:
-                              (Stat == null || Stat["referralLink"] == null)
-                              ? "https://bounten.com/lakshit"
-                              : "${Stat["referralLink"]}",
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.qr_code, color: Colors.blue),
-                            onPressed: () {
-                              showDialog(
-                                context: context,
-                                builder: (context) => QrPage(),
-                              );
-                            },
-                          ),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(color: Colors.blue),
-                          ),
-                          hintStyle: TextStyle(color: Colors.blue),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: 12),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 0.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Card(
-                    child: Container(
-                      width: 155,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: MaterialButton(
-                          color: Colors.blue,
-                          onPressed: () {
-                            copyText(
-                              (Stat == null || Stat["referralLink"] == null)
-                                  ? "https://bounten.com/lakshit"
-                                  : "${Stat["referralLink"]}",
-                            );
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.copy, color: Colors.white),
-                              Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Text(
-                                  'Copy Link',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Card(
-                    borderOnForeground: false,
-                    child: Container(
-                      width: 155,
+            //             // borderRadius: BorderRadius.circular(15),
+            //             // border: Border.all(color: Colors.blue),
+            //           ),
+            //           child: TextField(
+            //             controller: ctl,
+            //             readOnly: true,
+            //             decoration: InputDecoration(
+            //               hintText:
+            //                   (Stat == null || Stat["referralLink"] == null)
+            //                   ? "https://bounten.com/lakshit"
+            //                   : "${Stat["referralLink"]}",
+            //               suffixIcon: IconButton(
+            //                 icon: Icon(Icons.qr_code, color: Colors.blue),
+            //                 onPressed: () {
+            //                   showDialog(
+            //                     context: context,
+            //                     builder: (context) => QrPage(),
+            //                   );
+            //                 },
+            //               ),
+            //               border: OutlineInputBorder(
+            //                 borderRadius: BorderRadius.circular(12),
+            //                 borderSide: BorderSide(color: Colors.blue),
+            //               ),
+            //               hintStyle: TextStyle(color: Colors.blue),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
+            // SizedBox(height: 12),
+            // Padding(
+            //   padding: const EdgeInsets.symmetric(horizontal: 0.0),
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //     children: [
+            //       Card(
+            //         child: Container(
+            //           width: 155,
+            //           child: ClipRRect(
+            //             borderRadius: BorderRadius.circular(12),
+            //             child: MaterialButton(
+            //               color: Colors.blue,
+            //               onPressed: () {
+            //                 copyText(
+            //                   (Stat == null || Stat["referralLink"] == null)
+            //                       ? "https://bounten.com/lakshit"
+            //                       : "${Stat["referralLink"]}",
+            //                 );
+            //               },
+            //               child: Row(
+            //                 mainAxisAlignment: MainAxisAlignment.center,
+            //                 children: [
+            //                   Icon(Icons.copy, color: Colors.white),
+            //                   Padding(
+            //                     padding: const EdgeInsets.all(15.0),
+            //                     child: Text(
+            //                       'Copy Link',
+            //                       style: TextStyle(color: Colors.white),
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //       Card(
+            //         borderOnForeground: false,
+            //         child: Container(
+            //           width: 155,
 
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: adth),
-                      ),
-                      child: ClipRRect(
-                        borderRadius: BorderRadiusGeometry.circular(12),
-                        child: MaterialButton(
-                          // color: Colors.white,
-                          color: bg,
-                          onPressed: () {
-                            shareImageAndText();
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.share_outlined, color: Colors.blue),
-                              Padding(
-                                padding: const EdgeInsets.all(15.0),
-                                child: Text(
-                                  'Share',
-                                  style: TextStyle(color: Colors.blue),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            //           decoration: BoxDecoration(
+            //             borderRadius: BorderRadius.circular(12),
+            //             border: Border.all(color: adth),
+            //           ),
+            //           child: ClipRRect(
+            //             borderRadius: BorderRadiusGeometry.circular(12),
+            //             child: MaterialButton(
+            //               // color: Colors.white,
+            //               color: bg,
+            //               onPressed: () {
+            //                 shareImageAndText();
+            //               },
+            //               child: Row(
+            //                 mainAxisAlignment: MainAxisAlignment.center,
+            //                 children: [
+            //                   Icon(Icons.share_outlined, color: Colors.blue),
+            //                   Padding(
+            //                     padding: const EdgeInsets.all(15.0),
+            //                     child: Text(
+            //                       'Share',
+            //                       style: TextStyle(color: Colors.blue),
+            //                     ),
+            //                   ),
+            //                 ],
+            //               ),
+            //             ),
+            //           ),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // ),
 
             // SizedBox(height: 15),
             // SizedBox(height: 5),
             (Trans == null || Trans["data"] == null)
-                ? Container(
+                ? Card(
+                    color: Colors.white,
                     margin: EdgeInsets.only(top: 10),
                     child: Center(
-                      child: Column(
-                        children: [
-                          Text(
-                            msg,
-                            style: TextStyle(
-                              color: (logi || msg == "Loading")
-                                  ? Colors.green
-                                  : Colors.red,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Column(
+                          children: [
+                            Text(
+                              (msg == "Loading") ? "" : msg,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: (msg == "Loading")
+                                    ? Colors.black
+                                    : Colors.red,
+                              ),
                             ),
-                          ),
-                          IconButton(
-                            onPressed: () {
-                              _gettran();
-                            },
-                            icon: Icon(
-                              Icons.refresh,
-                              color: (logi || msg == "Loading")
-                                  ? Colors.green
-                                  : Colors.red,
+                            // RefreshProgressIndicator(s),
+                            GestureDetector(
+                              // style: ButtonStyle(
+                              //   elevation: WidgetStatePropertyAll(2),
+                              //   padding: WidgetStatePropertyAll(
+                              //     EdgeInsetsGeometry.all(5),
+                              //   ),
+                              //   backgroundColor: WidgetStatePropertyAll(
+                              //     Colors.white,
+                              //   ),
+                              // ),
+                              // color: Colors.green,
+                              // highlightColor: ,
+                              onTap: () {
+                                msg = "Loading";
+                                process = true;
+                                setState(() {});
+                                _gettran();
+                              },
+                              child: (process)
+                                  ? RefreshProgressIndicator(
+                                      color: Colors.blue,
+                                      backgroundColor: Colors.white,
+                                    )
+                                  :
+                                    // LinearProgressIndicator(color: Colors.blue),
+                                    Container(
+                                      // decoration: BoxDecoration(
+                                      //   borderRadius: BorderRadius.circular(60),
+                                      //   color: Colors.white,
+                                      // ),
+                                      padding: EdgeInsets.all(5),
+                                      child: Icon(
+                                        Icons.refresh,
+                                        size: 28,
+                                        // size: 28,
+                                        color: (msg == "Loading")
+                                            ? Colors.black
+                                            : Colors.red,
+                                      ),
+                                    ),
                             ),
-                          ),
-                        ],
+
+                            // Text(
+                            //   msg,
+                            //   style: TextStyle(
+                            //     color: (logi || msg == "Loading")
+                            //         ? Colors.green
+                            //         : Colors.red,
+                            //   ),
+                            // ),
+                            // IconButton(
+                            //   onPressed: () {
+                            //     _gettran();
+                            //   },
+                            //   icon: Icon(
+                            //     Icons.refresh,
+                            //     color: (logi || msg == "Loading")
+                            //         ? Colors.green
+                            //         : Colors.red,
+                            //   ),
+                            // ),
+                          ],
+                        ),
                       ),
                     ),
                   )

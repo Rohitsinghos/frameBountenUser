@@ -31,7 +31,7 @@ class AppDrawer extends StatelessWidget {
     return Drawer(
       backgroundColor: Colors.white,
       child: ListView(
-        padding: EdgeInsets.zero,
+        padding: EdgeInsets.all(15),
         children: [
           SizedBox(height: 100),
           GestureDetector(
@@ -54,11 +54,12 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           SizedBox(height: 20),
-          MaterialButton(
-            onPressed: () {
+          GestureDetector(
+            onTap: () {
               if (page == 1) {
                 Navigator.pop(context);
               } else {
+                Navigator.pop(context);
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => DashboardPage()),
@@ -82,11 +83,13 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           SizedBox(height: 5),
-          MaterialButton(
-            onPressed: () {
+          GestureDetector(
+            onTap: () {
               if (page == 2) {
                 Navigator.pop(context);
               } else {
+                Navigator.pop(context);
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => PersonalInfoPage()),
@@ -99,8 +102,8 @@ class AppDrawer extends StatelessWidget {
                 title: Row(
                   children: [
                     (page == 2)
-                        ? Icon(Icons.person_rounded, color: adth)
-                        : Icon(Icons.person_outline_rounded),
+                        ? Icon(Icons.account_circle, color: adth)
+                        : Icon(Icons.account_circle_outlined),
                     SizedBox(width: 10),
                     Text('Profile', style: txs(2)),
                   ],
@@ -109,11 +112,12 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           SizedBox(height: 5),
-          MaterialButton(
-            onPressed: () {
+          GestureDetector(
+            onTap: () {
               if (page == 3) {
                 Navigator.pop(context);
               } else {
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => EarningPage()),
@@ -126,8 +130,8 @@ class AppDrawer extends StatelessWidget {
                 title: Row(
                   children: [
                     (page == 3)
-                        ? Icon(Icons.local_activity, color: adth)
-                        : Icon(Icons.local_activity_outlined),
+                        ? Icon(Icons.bar_chart, color: adth)
+                        : Icon(Icons.bar_chart_outlined),
                     SizedBox(width: 10),
                     Text('Performance', style: txs(3)),
                   ],
@@ -136,11 +140,12 @@ class AppDrawer extends StatelessWidget {
             ),
           ),
           SizedBox(height: 5),
-          MaterialButton(
-            onPressed: () {
+          GestureDetector(
+            onTap: () {
               if (page == 4) {
                 Navigator.pop(context);
               } else {
+                Navigator.pop(context);
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -155,7 +160,7 @@ class AppDrawer extends StatelessWidget {
                 title: Row(
                   children: [
                     (page == 4)
-                        ? Icon(Icons.traffic_rounded, color: adth)
+                        ? Icon(Icons.transform, color: adth)
                         : Icon(Icons.transform_outlined),
                     SizedBox(width: 10),
                     Text('Transaction History', style: txs(4)),
@@ -164,8 +169,8 @@ class AppDrawer extends StatelessWidget {
               ),
             ),
           ),
-          // MaterialButton(
-          //   onPressed: () {
+          // GestureDetector(
+          //   onTap: () {
           //     Navigator.push(
           //       context,
           //       MaterialPageRoute(builder: (context) => SupportTicketPage()),
